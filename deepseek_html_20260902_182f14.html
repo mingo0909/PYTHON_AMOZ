@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آموزش پایتون · کد و خروجی زنده</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0a0f14;
+            color: #e4e9f0;
+            padding: 1.2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.8rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #2a323d;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffd866;
+        }
+
+        .logo i {
+            color: #4b9eff;
+            font-size: 2.2rem;
+        }
+
+        .badge {
+            background: #2a323d;
+            padding: 0.4rem 1.4rem;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            color: #b0c7e0;
+        }
+
+        .badge i {
+            margin-left: 0.5rem;
+            color: #4b9eff;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 280px 1fr 1fr;
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .sidebar {
+                grid-column: 1 / -1;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            .sidebar .lesson-list {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.4rem;
+            }
+            .sidebar .lesson-list .lesson-item {
+                flex: 0 0 auto;
+                padding: 0.4rem 1rem;
+            }
+        }
+
+        @media (max-width: 700px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                grid-column: 1;
+            }
+        }
+
+        .sidebar {
+            background: #141c26;
+            border-radius: 28px;
+            padding: 1.5rem 1rem;
+            border: 1px solid #25303d;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            color: #ffd866;
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border-bottom: 1px solid #2a3645;
+            padding-bottom: 0.8rem;
+        }
+
+        .lesson-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .lesson-item {
+            background: transparent;
+            border: none;
+            color: #b7cbe5;
+            padding: 0.7rem 1rem;
+            border-radius: 14px;
+            text-align: right;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            font-weight: 500;
+            border: 1px solid transparent;
+            width: 100%;
+        }
+
+        .lesson-item i {
+            color: #4b9eff;
+            width: 1.4rem;
+            font-size: 0.9rem;
+        }
+
+        .lesson-item:hover {
+            background: #1f2a38;
+            border-color: #3a4b60;
+        }
+
+        .lesson-item.active {
+            background: #1f2a38;
+            border-color: #ffd866;
+            color: #fff;
+            box-shadow: 0 0 0 1px #ffd86633;
+        }
+
+        .lesson-item .num {
+            color: #6e8aa8;
+            font-size: 0.75rem;
+            margin-left: auto;
+            background: #1f2a36;
+            padding: 0.1rem 0.6rem;
+            border-radius: 40px;
+        }
+
+        .lesson-panel {
+            background: #171f28;
+            border-radius: 28px;
+            padding: 1.8rem 2rem;
+            border: 1px solid #2b3643;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.7);
+            overflow-y: auto;
+            max-height: 85vh;
+        }
+
+        .lesson-panel h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #ffd866;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .lesson-panel h2 i {
+            color: #4b9eff;
+        }
+
+        .lesson-meta {
+            color: #7a94b0;
+            font-size: 0.85rem;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid #25303d;
+            padding-bottom: 0.6rem;
+        }
+
+        .lesson-content {
+            font-size: 1.05rem;
+            line-height: 2;
+            color: #d4deec;
+        }
+
+        .lesson-content p {
+            margin: 1.2rem 0;
+        }
+
+        .lesson-content strong {
+            color: #ffd866;
+        }
+
+        .lesson-content code {
+            background: #1f2a36;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #b7d0ea;
+        }
+
+        .lesson-content ul {
+            padding-right: 1.5rem;
+            margin: 0.8rem 0;
+        }
+
+        .lesson-content ul li {
+            margin: 0.4rem 0;
+            list-style-type: none;
+        }
+
+        .lesson-content ul li::before {
+            content: "▸ ";
+            color: #4b9eff;
+        }
+
+        .tip-box {
+            background: #1e2d3d;
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            border: 1px solid #3b5068;
+            margin: 1.5rem 0;
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+        }
+
+        .tip-box i {
+            color: #ffd866;
+            font-size: 1.4rem;
+            margin-top: 0.2rem;
+        }
+
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #5b728b;
+            border-top: 1px solid #212b36;
+            padding-top: 1.2rem;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0e141c;
+            border-radius: 12px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #35485e;
+            border-radius: 12px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4b637e;
+        }
+
+        .btn-run-code {
+            background: linear-gradient(145deg, #1f7b4d, #1a6b42);
+            border: none;
+            color: #fff;
+            padding: 0.7rem 2rem;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.05rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.8rem;
+            border: 1px solid #2a9d6e;
+            box-shadow: 0 4px 15px rgba(31, 123, 77, 0.3);
+        }
+
+        .btn-run-code:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 25px rgba(31, 123, 77, 0.5);
+            background: linear-gradient(145deg, #2a9d6e, #1f7b4d);
+        }
+
+        .btn-run-code:active {
+            transform: scale(0.95);
+        }
+
+        .btn-run-code i {
+            font-size: 1.2rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0 0.3rem;
+        }
+
+        .status-badge.success {
+            background: #1a6b42;
+            color: #81c995;
+        }
+
+        .status-badge.info {
+            background: #1a3a5a;
+            color: #6eb5ff;
+        }
+
+        /* ===== VS Code Style ===== */
+        .vscode-panel {
+            background: #1e1e2e;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #2a2a3a;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .vscode-tabs {
+            background: #252535;
+            padding: 0.3rem 1rem;
+            display: flex;
+            gap: 0.3rem;
+            border-bottom: 1px solid #3a3a4a;
+            align-items: center;
+        }
+
+        .vscode-tab {
+            padding: 0.4rem 1rem;
+            font-size: 0.75rem;
+            color: #9a9aae;
+            border-radius: 6px 6px 0 0;
+            cursor: default;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: transparent;
+            border: none;
+        }
+
+        .vscode-tab.active {
+            background: #1e1e2e;
+            color: #d4d4e0;
+        }
+
+        .vscode-tab i {
+            font-size: 0.7rem;
+        }
+
+        .vscode-body-wrapper {
+            display: flex;
+            background: #1e1e2e;
+            min-height: 180px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .line-numbers-col {
+            padding: 0.8rem 0;
+            min-width: 2.5rem;
+            text-align: left;
+            color: #4a4a5e;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            user-select: none;
+            line-height: 1.8;
+            background: #1e1e2e;
+            border-right: 1px solid #2a2a3a;
+            padding-right: 0.3rem;
+            flex-shrink: 0;
+        }
+
+        .line-numbers-col span {
+            display: block;
+            padding: 0 0.5rem;
+        }
+
+        .code-content-col {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: #1e1e2e;
+            overflow-x: auto;
+        }
+
+        #codeDisplay {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: 'Fira Code', 'Cascadia Code', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: #d4d4e0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .vscode-output {
+            background: #1a1a2a;
+            border-top: 1px solid #2a2a3a;
+            padding: 0.8rem 1.2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #b7d0ea;
+            white-space: pre-wrap;
+            word-break: break-word;
+            min-height: 200px;
+            max-height: 380px;
+            overflow-y: auto;
+            direction: ltr;
+            text-align: left;
+            line-height: 1.8;
+        }
+
+        .vscode-output .output-label {
+            color: #6a8aa8;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid #2a2a3a;
+            padding-bottom: 0.3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .vscode-output .output-label i {
+            color: #81c995;
+        }
+
+        .output-content-text .success-text {
+            color: #81c995;
+        }
+        .output-content-text .error-text {
+            color: #f28b82;
+        }
+        .output-content-text .info-text {
+            color: #6eb5ff;
+        }
+        .output-content-text .warning-text {
+            color: #ffd866;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <i class="fab fa-python"></i>
+            <span>پایتون‌آموز</span>
+        </div>
+        <div class="badge">
+            <i class="fas fa-graduation-cap"></i> ۱۲ درس · از صفر تا پیشرفته
+        </div>
+    </header>
+
+    <div class="main-grid">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <h3><i class="fas fa-list-ul"></i> فهرست درس‌ها</h3>
+            <div class="lesson-list" id="lessonList"></div>
+        </aside>
+
+        <!-- ===== LESSON PANEL ===== -->
+        <section class="lesson-panel" id="lessonPanel">
+            <h2 id="lessonTitle"><i class="fas fa-book"></i> درس ۱</h2>
+            <div class="lesson-meta" id="lessonMeta">مفاهیم پایه</div>
+            <div class="lesson-content" id="lessonContent"></div>
+        </section>
+
+        <!-- ===== CODE + OUTPUT PANEL (VS Code Style) ===== -->
+        <section class="lesson-panel" style="display: flex; flex-direction: column; padding: 1.2rem 1.5rem;">
+            <h2 style="font-size:1.2rem; margin-bottom:0.3rem; color:#ffd866;">
+                <i class="fas fa-terminal"></i> کد · خروجی
+            </h2>
+            <div style="color:#7a94b0; font-size:0.75rem; margin-bottom:0.8rem; border-bottom:1px solid #25303d; padding-bottom:0.4rem;">
+                <i class="fas fa-code"></i> کد را ببین و خروجی را اجرا کن
+            </div>
+
+            <!-- VS Code Style Panel -->
+            <div class="vscode-panel">
+                <!-- Tabs -->
+                <div class="vscode-tabs">
+                    <button class="vscode-tab active">
+                        <i class="fab fa-python" style="color:#4b9eff;"></i> main.py
+                        <span class="close-btn"><i class="fas fa-times"></i></span>
+                    </button>
+                    <button class="vscode-tab">
+                        <i class="fas fa-file-code"></i> output
+                        <span class="close-btn"><i class="fas fa-times"></i></span>
+                    </button>
+                    <span style="color:#4a4a5e; font-size:0.6rem; margin-right:auto;">
+                        <i class="fas fa-circle" style="color:#81c995; font-size:0.4rem;"></i> Python 3.12
+                    </span>
+                </div>
+
+                <!-- Body with line numbers -->
+                <div class="vscode-body-wrapper">
+                    <div class="line-numbers-col" id="lineNumbers">
+                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
+                        <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+                    </div>
+                    <div class="code-content-col">
+                        <pre id="codeDisplay"># کد خود را اینجا ببینید</pre>
+                    </div>
+                </div>
+
+                <!-- دکمه اجرا -->
+                <div style="padding: 0.5rem 1rem; background: #1a1a2a; border-top: 1px solid #2a2a3a; display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
+                    <button class="btn-run-code" onclick="runDisplayedCode()" style="padding:0.4rem 1.2rem; font-size:0.85rem; margin-top:0;">
+                        <i class="fas fa-play"></i> نمایش خروجی
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <button onclick="copyCode()" style="background: #2a2a3a; border: none; color: #b7cbe5; padding: 0.3rem 1rem; border-radius: 20px; cursor: pointer; font-size:0.75rem;">
+                        <i class="fas fa-copy"></i> کپی
+                    </button>
+                    <span style="color:#4a6a8a; font-size:0.65rem; margin-right:auto;">
+                        <i class="fas fa-keyboard"></i> کلیک برای نمایش خروجی
+                    </span>
+                </div>
+
+                <!-- Output (بزرگ‌تر) -->
+                <div class="vscode-output" id="outputDisplay">
+                    <div class="output-label">
+                        <i class="fas fa-window-maximize"></i> خروجی
+                        <span style="margin-right:auto; font-size:0.55rem; color:#4a6a8a;">
+                            <i class="fas fa-circle" style="color:#6a8aa8;"></i> آماده
+                        </span>
+                    </div>
+                    <div class="output-content-text" id="outputContentText">
+                        <span class="info-text"><i class="fas fa-hand-pointer"></i> روی دکمه <span class="status-badge info">نمایش خروجی</span> کلیک کن...</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top:0.5rem; font-size:0.65rem; color:#4a6a8a; display:flex; gap:1rem; flex-wrap:wrap;">
+                <span><i class="fas fa-code"></i> ۱۲ درس</span>
+                <span><i class="fas fa-sync-alt"></i> کد هر درس به‌روز می‌شود</span>
+                <span><i class="fas fa-copy"></i> کپی کد</span>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <i class="fas fa-heart" style="color:#ff6b6b;"></i> ساخته شده برای یادگیری پایتون · ۱۲ درس جامع
+        <span style="display:block; margin-top:0.3rem; font-size:0.65rem; color:#4a6a8a;">
+            <i class="fas fa-code"></i> با <i class="fas fa-coffee"></i> و <i class="fas fa-mug-hot"></i>
+        </span>
+    </footer>
+
+    <script>
+        // -------- داده‌های ۱۲ درس با توضیحات 5000 کاراکتر و خروجی از پیش تعیین شده --------
+        const lessons = [{
+            id: 1,
+            title: "سلام دنیا! 🚀",
+            meta: "آشنایی با چاپ، کامنت و ترمینال",
+            content: `
+                <p><i class="fas fa-star" style="color:#ffd866;"></i> <strong>خوش آمدی به دنیای پایتون!</strong></p>
+                <p>اولین برنامه‌ای که هر برنامه‌نویسی می‌نویسه، چاپ عبارت "سلام دنیا" است. این کار با تابع <code>print()</code> انجام میشه. تابع print یکی از پرکاربردترین توابع در پایتون است و برای نمایش خروجی در ترمینال استفاده می‌شود. شما می‌توانید هر تعداد آرگومان به آن بدهید و با کاما از هم جدا کنید. همچنین می‌توانید از پارامترهای <code>sep</code> (جداکننده) و <code>end</code> (پایان‌دهنده) برای کنترل نحوه نمایش استفاده کنید. به عنوان مثال، <code>print("سلام", "دنیا", sep="-")</code> خروجی <code>سلام-دنیا</code> را نمایش می‌دهد. و <code>print("سلام", end="!")</code> خروجی <code>سلام!</code> را نمایش می‌دهد و به خط بعدی نمی‌رود.</p>
+                <div class="tip-box"><i class="fas fa-terminal"></i><div><strong>ترمینال چیست؟</strong> ترمینال یا خط فرمان، محیطی برای اجرای کدها و دیدن خروجی آنهاست. در این آموزش، خروجی کد را در کادر آبی رنگ زیر می‌بینید. ترمینال به شما امکان می‌دهد برنامه‌های خود را اجرا کنید و نتیجه را مشاهده نمایید. در پایتون، تابع print() خروجی را در ترمینال نمایش می‌دهد. ترمینال در واقع یک رابط متنی است که شما می‌توانید دستورات خود را در آن وارد کنید و نتیجه را ببینید. در سیستم‌عامل‌های مختلف، ترمینال نام‌های متفاوتی دارد: در ویندوز به آن Command Prompt یا PowerShell می‌گویند، در لینوکس و مک به آن Terminal می‌گویند. اما همه آنها یک کار را انجام می‌دهند: اجرای دستورات و نمایش خروجی.</div></div>
+                <p><strong>کامنت‌ها</strong> با <code>#</code> شروع می‌شوند و برای توضیح کد استفاده می‌شوند. کامنت‌ها اجرا نمی‌شوند و فقط برای خوانایی کد هستند. استفاده از کامنت‌های خوب، کد شما را برای دیگران (و خودتان در آینده) قابل فهم‌تر می‌کند. کامنت‌ها می‌توانند در یک خط جداگانه باشند یا در انتهای یک خط کد قرار بگیرند. همچنین می‌توانید از کامنت‌های چندخطی با استفاده از سه نقل قول <code>'''</code> یا <code>"""</code> استفاده کنید که معمولاً برای مستندسازی توابع و کلاس‌ها به کار می‌روند.</p>
+                <p>🔹 تابع <code>print()</code> یک یا چند ورودی می‌گیرد و آنها را در خروجی نمایش می‌دهد. می‌توانید هر تعداد آرگومان به آن بدهید و با کاما جدا کنید.</p>
+                <p>📌 <span class="highlight">نکته مهم:</span> در پایتون، فاصله و تورفتگی (Indentation) بسیار مهم است. بر خلاف بسیاری از زبان‌ها که از آکولاد استفاده می‌کنند، پایتون از فاصله برای مشخص کردن بلوک‌های کد استفاده می‌کند. این یکی از ویژگی‌های منحصر به فرد پایتون است که کد را تمیز و خوانا می‌کند. معمولاً از ۴ فاصله یا یک Tab برای تورفتگی استفاده می‌شود. اگر تورفتگی را رعایت نکنید، برنامه با خطا مواجه می‌شود. این قانون به خصوص در ساختارهای شرطی، حلقه‌ها و توابع بسیار مهم است.</p>
+                <p>پایتون یک زبان برنامه‌نویسی سطح بالا، تفسیری و شی‌گرا است که توسط گیدو ون روسوم در سال ۱۹۹۱ ایجاد شد. این زبان به دلیل سادگی، خوانایی بالا و قدرتمند بودن، به یکی از محبوب‌ترین زبان‌های برنامه‌نویسی در جهان تبدیل شده است. پایتون در حوزه‌های مختلفی مانند توسعه وب، علم داده، هوش مصنوعی، اتوماسیون، و توسعه نرم‌افزار استفاده می‌شود. یکی از دلایل محبوبیت پایتون، کتابخانه‌های گسترده و جامعه بزرگ آن است. شما می‌توانید با استفاده از پایتون، برنامه‌های ساده تا بسیار پیچیده را توسعه دهید.</p>
+            `,
+            code: `# اولین برنامه پایتون\nprint("سلام دنیا!")\nprint("به دوره پایتون خوش آمدی!")\nprint("پایتون", "زبان", "برنامه‌نویسی", "عالی", "است")`,
+            output: `سلام دنیا!\nبه دوره پایتون خوش آمدی!\nپایتون زبان برنامه‌نویسی عالی است`
+        }, {
+            id: 2,
+            title: "متغیرها و انواع داده 📦",
+            meta: "عدد، رشته، بولین و تایپ داده",
+            content: `
+                <p><strong>متغیر</strong> مانند یک جعبه برای نگهداری داده است. در پایتون نیازی به تعیین نوع متغیر نیست و خود زبان تشخیص می‌دهد. این ویژگی پایتون را بسیار انعطاف‌پذیر می‌کند و به شما اجازه می‌دهد بدون نگرانی از نوع داده، کد بنویسید. پایتون یک زبان با نوع‌دهی پویا (Dynamic Typing) است، یعنی نوع متغیر در زمان اجرا مشخص می‌شود و می‌توانید در طول اجرا، نوع داده یک متغیر را تغییر دهید. به عنوان مثال، می‌توانید یک متغیر را ابتدا به عنوان عدد صحیح تعریف کنید و سپس به رشته تغییر دهید.</p>
+                <p>انواع داده اصلی در پایتون:</p>
+                <ul>
+                    <li><code>str</code> (رشته) : متن مانند <code>"سلام"</code> یا <code>'سلام'</code> - رشته‌ها در پایتون immutable (غیرقابل تغییر) هستند</li>
+                    <li><code>int</code> (عدد صحیح) : مانند <code>25</code> یا <code>-10</code> - اعداد صحیح بدون محدودیت اندازه</li>
+                    <li><code>float</code> (عدد اعشاری) : مانند <code>3.14</code> یا <code>2.5</code> - اعداد اعشاری با دقت دوگانه</li>
+                    <li><code>bool</code> (منطقی) : فقط <code>True</code> یا <code>False</code> - برای شرایط و تصمیم‌گیری</li>
+                    <li><code>list</code> (لیست) : مجموعه‌ای از مقادیر مانند <code>[1, 2, 3]</code> - قابل تغییر و مرتب</li>
+                    <li><code>tuple</code> (تاپل) : مانند لیست اما غیرقابل تغییر <code>(1, 2, 3)</code> - برای داده‌های ثابت</li>
+                    <li><code>dict</code> (دیکشنری) : کلید-مقدار مانند <code>{"name": "علی"}</code> - برای ذخیره داده‌های مرتبط</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-lightbulb"></i><div>برای دیدن نوع متغیر از تابع <code>type()</code> استفاده کن. این تابع نوع داده متغیر را به شما نشان می‌دهد و برای دیباگ کردن بسیار مفید است. همچنین می‌توانید از تابع <code>isinstance()</code> برای بررسی نوع داده استفاده کنید.</div></div>
+                <p>📌 <span class="highlight">نکته مهم:</span> نام متغیرها باید با حرف یا زیرخط شروع شوند و نمی‌توانند با عدد شروع شوند. همچنین از کلمات کلیدی پایتون (مانند if, for, while, def, class, import) نمی‌توان به عنوان نام متغیر استفاده کرد. نام متغیرها به حروف بزرگ و کوچک حساس هستند، یعنی <code>name</code> و <code>Name</code> دو متغیر متفاوت هستند. بهتر است از نام‌های توصیفی استفاده کنید تا کد شما خوانا باشد. همچنین از استانداردهای نام‌گذاری مانند snake_case (مثلاً <code>my_variable</code>) برای متغیرها و CamelCase برای کلاس‌ها استفاده کنید.</p>
+                <p>در پایتون، همه چیز یک شیء است! حتی اعداد و رشته‌ها هم شیء هستند و متدهای خاص خود را دارند. به عنوان مثال، رشته‌ها متدهایی مانند <code>upper()</code>، <code>lower()</code>، <code>split()</code> و غیره دارند. این ویژگی پایتون را بسیار قدرتمند و منعطف می‌کند و به شما اجازه می‌دهد از متدهای مختلف روی داده‌ها استفاده کنید. همچنین پایتون از نوع‌دهی تدریجی (Gradual Typing) با استفاده از type hints پشتیبانی می‌کند که به شما امکان می‌دهد نوع داده را به صورت اختیاری مشخص کنید و از ابزارهای تحلیل ایستا استفاده کنید. این ویژگی در پروژه‌های بزرگ بسیار مفید است و به خوانایی و نگهداری کد کمک می‌کند.</p>
+            `,
+            code: `name = "علی"\nage = 22\nheight = 1.78\nis_student = True\nprint("نام:", name)\nprint("سن:", age)\nprint("قد:", height)\nprint("دانشجو:", is_student)`,
+            output: `نام: علی\nسن: 22\nقد: 1.78\nدانشجو: True`
+        }, {
+            id: 3,
+            title: "ورودی گرفتن از کاربر ⌨️",
+            meta: "input() و تبدیل نوع",
+            content: `
+                <p>با تابع <code>input()</code> می‌توان از کاربر ورودی گرفت. این تابع اجرای برنامه را متوقف می‌کند تا کاربر چیزی وارد کند و سپس با زدن Enter، برنامه ادامه پیدا می‌کند. این تابع همیشه <strong>رشته</strong> برمی‌گرداند، حتی اگر کاربر عدد وارد کند. بنابراین برای دریافت عدد، باید ورودی را با <code>int()</code> یا <code>float()</code> تبدیل کنیم. این تابع یک آرگومان اختیاری به عنوان پیام ورودی می‌گیرد که به کاربر نشان داده می‌شود. پیام ورودی می‌تواند شامل توضیحاتی باشد که به کاربر کمک کند بداند چه چیزی باید وارد کند.</p>
+                <p>برای دریافت عدد، باید ورودی را با <code>int()</code> یا <code>float()</code> تبدیل کنیم. اگر کاربر به جای عدد، متن وارد کند، برنامه با خطا مواجه می‌شود که بعداً در درس مدیریت خطا، نحوه برخورد با آن را یاد می‌گیریم. همیشه بهتر است ورودی کاربر را اعتبارسنجی کنید تا از بروز خطا جلوگیری شود. می‌توانید از حلقه‌ها و شرط‌ها برای تکرار درخواست تا زمانی که کاربر ورودی معتبر وارد کند، استفاده کنید. به عنوان مثال، می‌توانید از یک حلقه while استفاده کنید که تا زمانی که کاربر عدد وارد نکند، از او سوال کند.</p>
+                <div class="tip-box"><i class="fas fa-exclamation-triangle"></i><div><strong>هشدار:</strong> اگر کاربر ورودی نامعتبر وارد کند (مثلاً به جای عدد، حرف بزند)، برنامه با خطا متوقف می‌شود. برای جلوگیری از این مشکل، از try/except استفاده می‌کنیم که در درس دهم یاد می‌گیرید. همچنین می‌توانید از توابع <code>isnumeric()</code> و <code>isdigit()</code> برای بررسی ورودی قبل از تبدیل استفاده کنید.</div></div>
+                <p><strong>نکته:</strong> در این محیط، ورودی را در پنجره گفتگو (prompt) وارد کنید. وقتی کد اجرا می‌شود، پنجره‌ای باز می‌شود و از شما ورودی می‌خواهد. در محیط‌های واقعی، ورودی از طریق ترمینال انجام می‌شود. همچنین می‌توانید از <code>sys.stdin</code> برای ورودی‌های پیشرفته‌تر استفاده کنید.</p>
+                <p>📌 <span class="highlight">کاربرد:</span> از ورودی کاربر برای شخصی‌سازی برنامه‌ها، گرفتن اطلاعات، ایجاد تعامل با کاربر، ساخت برنامه‌های تعاملی، و دریافت تنظیمات از کاربر استفاده می‌شود. به عنوان مثال، در برنامه‌های خط فرمان، از ورودی برای دریافت دستورات کاربر استفاده می‌شود. در برنامه‌های گرافیکی، از ورودی برای دریافت اطلاعات از طریق فرم‌ها استفاده می‌شود. ورودی گرفتن از کاربر یکی از مهم‌ترین مفاهیم در برنامه‌نویسی است زیرا برنامه‌ها را تعاملی می‌کند. بدون ورودی، برنامه‌ها فقط خروجی ثابتی دارند و نمی‌توانند به نیازهای مختلف کاربران پاسخ دهند.</p>
+            `,
+            code: `name = input("نام خود را وارد کن: ")\nprint("سلام", name, "! خوش آمدی.")\nage = int(input("سن خود را وارد کن: "))\nprint("تو", age, "ساله هستی.")`,
+            output: `(با ورودی‌های: علی, 25)\nسلام علی ! خوش آمدی.\nتو 25 ساله هستی.`
+        }, {
+            id: 4,
+            title: "شرط if و else 🧠",
+            meta: "تصمیم‌گیری در برنامه",
+            content: `
+                <p>با <code>if</code> و <code>else</code> می‌توان بر اساس شرط، تصمیم گرفت. این ساختار به برنامه اجازه می‌دهد مسیرهای مختلفی را بر اساس شرایط طی کند. شرط‌ها در پایتون با استفاده از عملگرهای مقایسه‌ای و منطقی ساخته می‌شوند. عملگرهای مقایسه‌ای شامل <code>==</code> (برابر)، <code>!=</code> (نابرابر)، <code>></code> (بزرگتر)، <code><</code> (کوچکتر)، <code>>=</code> (بزرگتر یا مساوی)، <code><=</code> (کوچکتر یا مساوی) هستند. عملگرهای منطقی شامل <code>and</code> (و)، <code>or</code> (یا)، <code>not</code> (نقیض) هستند که برای ترکیب چند شرط استفاده می‌شوند.</p>
+                <p><strong>ساختار کامل:</strong></p>
+                <ul>
+                    <li><code>if شرط:</code> اگر شرط درست باشد، این بلوک اجرا می‌شود</li>
+                    <li><code>elif شرط:</code> (اختیاری) اگر شرط if نادرست بود، این شرط بررسی می‌شود</li>
+                    <li><code>else:</code> (اختیاری) اگر هیچ‌کدام از شرط‌ها درست نبود، این بلوک اجرا می‌شود</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-arrow-right"></i><div><strong>فاصله (indentation) بسیار مهم است!</strong> در پایتون، بلوک‌های کد با فاصله مشخص می‌شوند. معمولاً از ۴ فاصله یا یک Tab استفاده می‌شود. اگر فاصله را رعایت نکنید، برنامه با خطا مواجه می‌شود. به یاد داشته باشید که در پایتون، همه دستورات داخل یک بلوک باید به یک اندازه فاصله داشته باشند.</div></div>
+                <p>📌 <span class="highlight">نکته:</span> می‌توانید شرط‌های تو در تو (Nested Conditions) داشته باشید، یعنی داخل یک شرط، شرط دیگری قرار دهید. همچنین می‌توانید از عملگرهای منطقی برای ترکیب چند شرط استفاده کنید. به عنوان مثال، <code>if age >= 18 and has_license:</code> هر دو شرط باید درست باشند تا بلوک اجرا شود.</p>
+                <p>شرط‌ها در پایتون بسیار انعطاف‌پذیر هستند و می‌توانید از آنها برای کنترل جریان برنامه استفاده کنید. با استفاده از شرط‌ها، می‌توانید برنامه‌های هوشمندی بسازید که بر اساس شرایط مختلف، رفتار متفاوتی داشته باشند. به عنوان مثال، در یک برنامه فروشگاهی، می‌توانید بر اساس مبلغ خرید، تخفیف‌های مختلفی اعمال کنید.</p>
+            `,
+            code: `age = 20\nif age >= 18:\n    print("تو بالغ هستی.")\nelse:\n    print("تو نوجوان هستی.")\n\nscore = 16\nif score >= 17:\n    print("عالی! 🌟")\nelif score >= 14:\n    print("خوب 👌")\nelse:\n    print("متوسط 📚")`,
+            output: `تو بالغ هستی.\nخوب 👌`
+        }, {
+            id: 5,
+            title: "حلقه for 🔄",
+            meta: "تکرار با for و range",
+            content: `
+                <p><code>for</code> برای تکرار روی یک بازه یا لیست استفاده می‌شود. این حلقه یکی از پرکاربردترین ساختارها در برنامه‌نویسی است و برای انجام کارهای تکراری استفاده می‌شود. حلقه for در پایتون بسیار قدرتمند است و می‌تواند روی هر شیء قابل تکرار (iterable) مانند لیست‌ها، تاپل‌ها، رشته‌ها، دیکشنری‌ها و حتی فایل‌ها تکرار کند. این ویژگی پایتون را بسیار منعطف می‌کند و به شما اجازه می‌دهد به راحتی روی مجموعه‌های مختلف تکرار کنید.</p>
+                <p><code>range(start, stop, step)</code> یک دنباله از اعداد می‌سازد:</p>
+                <ul>
+                    <li><code>range(5)</code> → ۰ تا ۴ (stop شامل نمی‌شود)</li>
+                    <li><code>range(2, 7)</code> → ۲ تا ۶</li>
+                    <li><code>range(0, 10, 2)</code> → ۰،۲،۴،۶،۸ (step=2)</li>
+                    <li><code>range(10, 0, -1)</code> → ۱۰،۹،۸،...،۱ (معکوس)</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-cogs"></i><div>حلقه‌ها برای انجام کارهای تکراری بسیار مفید هستند. هر جا که نیاز به تکرار دارید، از حلقه استفاده کنید. برای مثال، پردازش لیست‌ها، محاسبات تکراری، تولید داده‌های سریالی، و خواندن فایل‌ها. همچنین می‌توانید از حلقه‌های تو در تو (Nested Loops) برای پردازش ماتریس‌ها و داده‌های چندبعدی استفاده کنید.</div></div>
+                <p>📌 <span class="highlight">نکته:</span> متغیر <code>i</code> در حلقه، یک متغیر محلی است و فقط داخل حلقه معنی دارد. می‌توانید از هر نام دیگری هم استفاده کنید. همچنین می‌توانید از تابع <code>enumerate()</code> برای دسترسی به ایندکس و مقدار همزمان استفاده کنید: <code>for i, value in enumerate(list):</code></p>
+                <p>حلقه for در پایتون بسیار کارآمد است و می‌تواند حجم زیادی از داده را به سرعت پردازش کند. با استفاده از حلقه for و توابع داخلی پایتون، می‌توانید کدهای بسیار کارآمد و خوانا بنویسید. به عنوان مثال، می‌توانید با یک خط کد، یک لیست را با استفاده از list comprehension ایجاد کنید: <code>[x**2 for x in range(10)]</code></p>
+            `,
+            code: `print("اعداد 0 تا 4:")\nfor i in range(5):\n    print(i, end=" ")\n\nprint("\\n\\nتکرار روی یک لیست:")\nfruits = ["سیب", "موز", "پرتقال"]\nfor fruit in fruits:\n    print(fruit, end=" ")`,
+            output: `اعداد 0 تا 4:\n0 1 2 3 4 \n\nتکرار روی یک لیست:\nسیب موز پرتقال `
+        }, {
+            id: 6,
+            title: "حلقه while 🔁",
+            meta: "تکرار تا زمانی که شرط برقرار است",
+            content: `
+                <p><code>while</code> تا زمانی که شرط درست باشد، اجرا می‌شود. این حلقه برای موقعیت‌هایی که تعداد تکرارها از قبل مشخص نیست، بسیار مناسب است. حلقه while معمولاً در شرایطی استفاده می‌شود که نیاز به تکرار تا زمانی که یک شرط خاص برقرار است، داریم. به عنوان مثال، منتظر ماندن برای ورودی کاربر، خواندن فایل تا انتها، یا اجرای یک فرآیند تا زمانی که یک شرط خاص رخ دهد.</p>
+                <p><strong>ساختار:</strong></p>
+                <ul>
+                    <li><code>while شرط:</code></li>
+                    <li style="padding-right:2rem;">کدهای داخل حلقه</li>
+                    <li style="padding-right:2rem;">به‌روزرسانی متغیر شرط (برای جلوگیری از حلقه بی‌نهایت)</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-exclamation-circle"></i><div><strong>هشدار!</strong> اگر شرط همیشه درست باشد، حلقه بی‌نهایت می‌شود و برنامه هرگز متوقف نمی‌شود. همیشه مطمئن شو که در داخل حلقه، شرط را به سمت False تغییر می‌دهی تا حلقه متوقف شود. برای جلوگیری از حلقه بی‌نهایت، می‌توانید از دستور <code>break</code> برای خروج از حلقه استفاده کنید.</div></div>
+                <p>📌 <span class="highlight">کاربرد:</span> حلقه while برای موقعیت‌هایی مثل منتظر ماندن برای ورودی کاربر، خواندن فایل تا انتها، و پردازش داده‌هایی که تعدادشان مشخص نیست استفاده می‌شود. همچنین در برنامه‌های سرور و سرویس‌های دائمی که باید همیشه در حال اجرا باشند، از حلقه while استفاده می‌شود.</p>
+                <p>حلقه while در پایتون بسیار انعطاف‌پذیر است و می‌توانید از آن برای پیاده‌سازی الگوریتم‌های پیچیده استفاده کنید. با استفاده از while، می‌توانید برنامه‌هایی بسازید که به صورت تعاملی با کاربر کار کنند، داده‌ها را پردازش کنند، یا حتی بازی‌های ساده بسازید. به عنوان مثال، می‌توانید یک بازی حدس عدد بسازید که تا زمانی که کاربر عدد را حدس نزند، ادامه پیدا کند.</p>
+            `,
+            code: `count = 0\nprint("شمارش از 0 تا 4:")\nwhile count < 5:\n    print(count, end=" ")\n    count += 1\n\nprint("\\n\\nاعداد 10 تا 1:")\nn = 10\nwhile n >= 1:\n    print(n, end=" ")\n    n -= 1`,
+            output: `شمارش از 0 تا 4:\n0 1 2 3 4 \n\nاعداد 10 تا 1:\n10 9 8 7 6 5 4 3 2 1 `
+        }, {
+            id: 7,
+            title: "لیست‌ها (List) 📋",
+            meta: "ذخیره و مدیریت چندین مقدار",
+            content: `
+                <p>لیست‌ها برای ذخیره چند مقدار در یک متغیر استفاده می‌شوند. لیست‌ها قابل تغییر (mutable) هستند و می‌توانید اعضای آن را اضافه، حذف یا تغییر دهید. لیست‌ها یکی از پرکاربردترین ساختارهای داده در پایتون هستند و در بسیاری از برنامه‌ها استفاده می‌شوند. شما می‌توانید لیست‌هایی از انواع داده‌های مختلف داشته باشید، حتی لیست‌های تو در تو (Nested Lists) که برای نمایش داده‌های چندبعدی مانند ماتریس‌ها استفاده می‌شوند.</p>
+                <p><strong>عملیات مهم روی لیست:</strong></p>
+                <ul>
+                    <li><code>len(list)</code> → تعداد اعضا</li>
+                    <li><code>list.append(x)</code> → اضافه کردن عضو به انتها</li>
+                    <li><code>list.insert(i, x)</code> → اضافه کردن عضو در موقعیت i</li>
+                    <li><code>list.remove(x)</code> → حذف اولین عضو برابر با x</li>
+                    <li><code>list.pop(i)</code> → حذف عضو در موقعیت i و برگرداندن آن</li>
+                    <li><code>list[index]</code> → دسترسی به عضو در موقعیت index</li>
+                    <li><code>list.sort()</code> → مرتب‌سازی لیست</li>
+                    <li><code>list.reverse()</code> → معکوس کردن لیست</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-info-circle"></i><div>شاخص‌ها (ایندکس) در لیست از ۰ شروع می‌شوند. همچنین می‌توانید از شاخص منفی استفاده کنید: <code>-1</code> آخرین عضو، <code>-2</code> یکی مانده به آخر و...</div></div>
+                <p>📌 <span class="highlight">نکته:</span> لیست‌ها می‌توانند شامل انواع داده‌های مختلف باشند. همچنین می‌توانید از Slicing (برش) برای دسترسی به بخشی از لیست استفاده کنید: <code>list[start:end:step]</code>. به عنوان مثال، <code>list[1:4]</code> اعضای ۱ تا ۳ را برمی‌گرداند.</p>
+                <p>لیست‌ها در پایتون بسیار قدرتمند هستند و امکانات زیادی برای کار با آنها وجود دارد. می‌توانید از توابع داخلی مانند <code>sum()</code>، <code>max()</code>، <code>min()</code>، <code>sorted()</code> روی لیست‌ها استفاده کنید. همچنین می‌توانید از List Comprehension برای ایجاد لیست‌های جدید به صورت فشرده و کارآمد استفاده کنید: <code>[x**2 for x in range(10)]</code></p>
+            `,
+            code: `fruits = ["سیب", "موز", "پرتقال"]\nprint("لیست اولیه:", fruits)\nfruits.append("انگور")\nprint("پس از append:", fruits)\nprint("اولین عضو:", fruits[0])`,
+            output: `لیست اولیه: ['سیب', 'موز', 'پرتقال']\nپس از append: ['سیب', 'موز', 'پرتقال', 'انگور']\nاولین عضو: سیب`
+        }, {
+            id: 8,
+            title: "دیکشنری (Dictionary) 📚",
+            meta: "ذخیره داده با کلید و مقدار",
+            content: `
+                <p>دیکشنری داده‌ها را با <strong>کلید</strong> و <strong>مقدار</strong> ذخیره می‌کند. این ساختار داده بسیار قدرتمند است و برای ذخیره اطلاعات مرتبط استفاده می‌شود. دیکشنری‌ها در پایتون بسیار کارآمد هستند و عملیات جستجو، افزودن و حذف در آنها با پیچیدگی زمانی O(1) انجام می‌شود. این ویژگی دیکشنری‌ها را برای ذخیره و بازیابی سریع داده‌ها بسیار مناسب می‌کند.</p>
+                <p><strong>ساختار:</strong> <code>{"key1": value1, "key2": value2}</code></p>
+                <ul>
+                    <li>دسترسی: <code>dict["key"]</code> یا <code>dict.get("key")</code></li>
+                    <li>اضافه کردن: <code>dict["new_key"] = value</code></li>
+                    <li>حذف: <code>del dict["key"]</code> یا <code>dict.pop("key")</code></li>
+                    <li>همه کلیدها: <code>dict.keys()</code></li>
+                    <li>همه مقادیر: <code>dict.values()</code></li>
+                    <li>همه جفت‌ها: <code>dict.items()</code></li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-database"></i><div>دیکشنری برای ذخیره اطلاعات مربوط به یک موضوع (مثل اطلاعات شخص، تنظیمات برنامه، داده‌های JSON و...) بسیار مفید است. کلیدها باید منحصر به فرد باشند و معمولاً از رشته استفاده می‌شود، اما می‌توانید از هر نوع داده غیرقابل تغییر (immutable) به عنوان کلید استفاده کنید.</div></div>
+                <p>📌 <span class="highlight">نکته:</span> در نسخه‌های جدید پایتون (از Python 3.7 به بعد)، دیکشنری ترتیب درج کلیدها را حفظ می‌کند. این ویژگی برای بسیاری از برنامه‌ها مفید است و به شما اجازه می‌دهد به ترتیب درج کلیدها اعتماد کنید.</p>
+                <p>دیکشنری‌ها در پایتون بسیار منعطف هستند و می‌توانید از آنها برای ساختاردهی داده‌های پیچیده استفاده کنید. می‌توانید دیکشنری‌های تو در تو داشته باشید که برای ذخیره داده‌های سلسله‌مراتبی مانند JSON بسیار مفید هستند. همچنین می‌توانید از دیکشنری‌ها برای کش کردن نتایج محاسبات، ذخیره تنظیمات برنامه، و بسیاری موارد دیگر استفاده کنید.</p>
+            `,
+            code: `person = {\n    "name": "سارا",\n    "age": 25,\n    "city": "تهران"\n}\nprint("نام:", person["name"])\nprint("سن:", person["age"])\nperson["job"] = "برنامه‌نویس"\nprint("شغل:", person["job"])`,
+            output: `نام: سارا\nسن: 25\nشغل: برنامه‌نویس`
+        }, {
+            id: 9,
+            title: "توابع (Function) ⚙️",
+            meta: "ساخت بلوک‌های قابل استفاده مجدد",
+            content: `
+                <p>توابع با <code>def</code> تعریف می‌شوند و کد را <strong>سازماندهی</strong> و <strong>قابل استفاده مجدد</strong> می‌کنند. توابع یکی از مهم‌ترین مفاهیم در برنامه‌نویسی هستند و به شما اجازه می‌دهند کد خود را به بخش‌های کوچک‌تر و قابل مدیریت تقسیم کنید. با استفاده از توابع، می‌توانید از تکرار کد جلوگیری کنید و برنامه‌های خود را تمیزتر و خوانا‌تر بنویسید.</p>
+                <p><strong>ساختار:</strong></p>
+                <ul>
+                    <li><code>def name(param1, param2, ...):</code></li>
+                    <li style="padding-right:2rem;">کدهای تابع</li>
+                    <li style="padding-right:2rem;"><code>return value</code> (اختیاری - اگر نباشد، None برمی‌گرداند)</li>
+                </ul>
+                <p><strong>انواع پارامترها:</strong></p>
+                <ul>
+                    <li>پارامترهای اجباری: <code>def func(a, b)</code></li>
+                    <li>پارامترهای پیش‌فرض: <code>def func(a, b=10)</code></li>
+                    <li>پارامترهای کلیدواژه‌ای: <code>def func(*args, **kwargs)</code></li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-cog"></i><div>توابع باعث می‌شوند کد تمیزتر، قابل فهم‌تر و قابل تست‌تر شود. هر تابع باید یک کار مشخص انجام دهد (Single Responsibility Principle). این اصل به شما کمک می‌کند تا کد خود را بهتر سازماندهی کنید و اشکال‌زدایی را آسان‌تر کنید.</div></div>
+                <p>📌 <span class="highlight">نکته:</span> توابع می‌توانند توابع دیگر را صدا بزنند و حتی توابع را به عنوان آرگومان به توابع دیگر پاس دهند (توابع درجه بالا). این ویژگی پایتون را برای برنامه‌نویسی تابعی (Functional Programming) مناسب می‌کند. همچنین می‌توانید از Decoratorها برای تغییر رفتار توابع استفاده کنید.</p>
+                <p>توابع در پایتون بسیار قدرتمند هستند و امکانات زیادی برای کار با آنها وجود دارد. می‌توانید از توابع برای ایجاد کتابخانه‌های قابل استفاده مجدد، ساخت APIهای ساده، و سازماندهی کدهای پیچیده استفاده کنید. همچنین می‌توانید از توابع برای پیاده‌سازی الگوریتم‌های مختلف و حل مسائل پیچیده استفاده کنید.</p>
+            `,
+            code: `def say_hello(name):\n    print("سلام", name, "! چطوری؟")\n\ndef add(a, b):\n    return a + b\n\nsay_hello("علی")\nresult = add(5, 3)\nprint("جمع 5 و 3 =", result)`,
+            output: `سلام علی ! چطوری؟\nجمع 5 و 3 = 8`
+        }, {
+            id: 10,
+            title: "مدیریت خطا (try/except) 🛡️",
+            meta: "گرفتن و مدیریت خطاها",
+            content: `
+                <p>با <code>try/except</code> می‌توان خطاها را <strong>گرفت</strong> و <strong>مدیریت</strong> کرد. این کار باعث می‌شود برنامه شما مقاوم‌تر باشد و در صورت بروز خطا، به جای Crash کردن، پیام مناسب نشان دهد. مدیریت خطا یکی از مهارت‌های ضروری در برنامه‌نویسی است که به شما اجازه می‌دهد برنامه‌های حرفه‌ای و قابل اعتماد بسازید.</p>
+                <p><strong>ساختار کامل:</strong></p>
+                <ul>
+                    <li><code>try:</code> کدی که ممکن است خطا دهد</li>
+                    <li><code>except ExceptionType:</code> کدی که در صورت خطا اجرا می‌شود</li>
+                    <li><code>else:</code> (اختیاری) اگر خطا نبود، اجرا می‌شود</li>
+                    <li><code>finally:</code> (اختیاری) همیشه اجرا می‌شود (چه خطا بیاید چه نیاید)</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-shield-alt"></i><div><strong>انواع خطاها:</strong> <code>ZeroDivisionError</code> (تقسیم بر صفر)، <code>ValueError</code> (تبدیل نامعتبر)، <code>TypeError</code> (نوع نامناسب)، <code>FileNotFoundError</code> (فایل پیدا نشد) و... هر کدام از این خطاها شرایط خاص خود را دارند و باید به صورت مناسب مدیریت شوند.</div></div>
+                <p>📌 <span class="highlight">نکته مهم:</span> همیشه خطاهای خاص را بگیرید و از except بدون نوع (که همه خطاها را می‌گیرد) با احتیاط استفاده کنید، چون ممکن است خطاهای مهم را پنهان کند. بهتر است خطاها را لاگ کنید تا بتوانید بعداً آنها را بررسی کنید.</p>
+                <p>مدیریت خطا در پایتون بسیار قدرتمند است و به شما اجازه می‌دهد برنامه‌های مقاوم و قابل اعتماد بسازید. با استفاده از try/except، می‌توانید خطاهای پیش‌بینی نشده را مدیریت کنید و به کاربر پیام‌های مفید نشان دهید. همچنین می‌توانید از <code>raise</code> برای ایجاد خطاهای سفارشی استفاده کنید و کنترل بیشتری روی جریان برنامه داشته باشید.</p>
+            `,
+            code: `try:\n    num1 = float(input("عدد اول: "))\n    num2 = float(input("عدد دوم: "))\n    result = num1 / num2\n    print(f"{num1} ÷ {num2} = {result}")\nexcept ZeroDivisionError:\n    print("❌ تقسیم بر صفر ممکن نیست!")\nexcept ValueError:\n    print("❌ لطفاً عدد وارد کن!")`,
+            output: `(با ورودی 10 و 2)\n10.0 ÷ 2.0 = 5.0`
+        }, {
+            id: 11,
+            title: "فایل‌ها (File I/O) 📁",
+            meta: "خواندن و نوشتن در فایل",
+            content: `
+                <p>با <code>open()</code> می‌توان فایل‌ها را خواند یا نوشت. کار با فایل‌ها یکی از مهارت‌های ضروری در برنامه‌نویسی است و در بسیاری از برنامه‌ها استفاده می‌شود. شما می‌توانید داده‌ها را در فایل‌ها ذخیره کنید و بعداً آنها را بازیابی کنید. این کار برای ذخیره‌سازی اطلاعات کاربر، تنظیمات برنامه، لاگ‌ها، و بسیاری موارد دیگر استفاده می‌شود.</p>
+                <p><strong>حالت‌های باز کردن فایل:</strong></p>
+                <ul>
+                    <li><code>"r"</code> : خواندن (پیش‌فرض) - فایل باید وجود داشته باشد</li>
+                    <li><code>"w"</code> : نوشتن (محتوای قبلی پاک می‌شود) - اگر فایل نباشد، ساخته می‌شود</li>
+                    <li><code>"a"</code> : افزودن به انتهای فایل - اگر فایل نباشد، ساخته می‌شود</li>
+                    <li><code>"r+"</code> : خواندن و نوشتن - فایل باید وجود داشته باشد</li>
+                    <li><code>"x"</code> : ایجاد فایل جدید - اگر فایل وجود داشته باشد، خطا می‌دهد</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-file"></i><div><strong>استفاده از <code>with</code></strong> فایل را خودکار می‌بندد و از خطا جلوگیری می‌کند. همیشه از with استفاده کنید تا مطمئن باشید فایل به درستی بسته می‌شود. این کار از نشت حافظه و مشکلات دیگر جلوگیری می‌کند.</div></div>
+                <p>📌 <span class="highlight">نکته:</span> مسیر فایل می‌تواند نسبی (نسبت به محل اجرای برنامه) یا مطلق باشد. در ویندوز از <code>\\</code> و در لینوکس/مک از <code>/</code> استفاده کنید. همچنین می‌توانید از ماژول <code>os.path</code> برای کار با مسیرها به صورت سیستمی استفاده کنید.</p>
+                <p>کار با فایل‌ها در پایتون بسیار ساده است و امکانات زیادی برای خواندن و نوشتن داده‌ها وجود دارد. می‌توانید فایل‌های متنی، فایل‌های CSV، فایل‌های JSON، و حتی فایل‌های باینری را بخوانید و بنویسید. همچنین می‌توانید از کتابخانه‌های مختلف برای کار با فرمت‌های خاص استفاده کنید.</p>
+            `,
+            code: `with open("sample.txt", "w") as f:\n    f.write("سلام! این یک فایل نمونه است.\\n")\nprint("✅ فایل نوشته شد.")\n\nwith open("sample.txt", "r") as f:\n    content = f.read()\n    print(content)`,
+            output: `✅ فایل نوشته شد.\n\nسلام! این یک فایل نمونه است.\n`
+        }, {
+            id: 12,
+            title: "کلاس‌ها و شی‌گرایی 🏗️",
+            meta: "مقدمه بر برنامه‌نویسی شی‌گرا (OOP)",
+            content: `
+                <p>با <code>class</code> می‌توان اشیاء (Object) تعریف کرد. برنامه‌نویسی شی‌گرا (OOP) یک پارادایم قدرتمند برای سازماندهی کد است که به شما اجازه می‌دهد مفاهیم دنیای واقعی را در کد خود شبیه‌سازی کنید. OOP به شما کمک می‌کند کد خود را به صورت ماژولار و قابل استفاده مجدد بنویسید و مدیریت کدهای بزرگ را آسان‌تر می‌کند.</p>
+                <p><strong>مفاهیم اصلی OOP:</strong></p>
+                <ul>
+                    <li><strong>کلاس (Class):</strong> قالبی برای ساخت اشیاء (مثل یک نقشه)</li>
+                    <li><strong>شیء (Object):</strong> نمونه‌ای از کلاس (مثل یک خانه ساخته شده از نقشه)</li>
+                    <li><code>__init__</code> : متد سازنده (مقداردهی اولیه) - هنگام ساخت شیء اجرا می‌شود</li>
+                    <li><code>self</code> : اشاره به خود شیء - برای دسترسی به ویژگی‌ها و متدهای شیء</li>
+                    <li><strong>وراثت (Inheritance):</strong> کلاس‌ها می‌توانند از کلاس‌های دیگر ارث‌بری کنند</li>
+                    <li><strong>کپسوله‌سازی (Encapsulation):</strong> پنهان کردن جزئیات داخلی</li>
+                    <li><strong>چندریختی (Polymorphism):</strong> رفتارهای مختلف برای یک متد</li>
+                </ul>
+                <div class="tip-box"><i class="fas fa-cubes"></i><div>شی‌گرایی به سازماندهی بهتر کد کمک می‌کند و مفاهیم دنیای واقعی را شبیه‌سازی می‌کند. با OOP می‌توانید کدهای پیچیده را به اجزای کوچکتر و قابل مدیریت تقسیم کنید. این کار باعث می‌شود کد شما قابل فهم‌تر، تست‌پذیرتر و قابل نگهداری‌تر باشد.</div></div>
+                <p>📌 <span class="highlight">نکته:</span> در پایتون، همه چیز یک شیء است! حتی اعداد و رشته‌ها هم شیء هستند و متدهای خاص خود را دارند. این ویژگی پایتون را بسیار قدرتمند و منعطف می‌کند و به شما اجازه می‌دهد از متدهای مختلف روی داده‌ها استفاده کنید.</p>
+                <p>برنامه‌نویسی شی‌گرا در پایتون بسیار قدرتمند است و امکانات زیادی برای سازماندهی کد وجود دارد. می‌توانید از کلاس‌های انتزاعی (Abstract Classes) برای تعریف قراردادها استفاده کنید. همچنین می‌توانید از چندریختی (Polymorphism) برای نوشتن کدهای انعطاف‌پذیر استفاده کنید. با استفاده از OOP، می‌توانید برنامه‌های بزرگ و پیچیده را به صورت ساختاریافته و سازماندهی شده بنویسید.</p>
+            `,
+            code: `class Car:\n    def __init__(self, name, color):\n        self.name = name\n        self.color = color\n    \n    def start(self):\n        print(f"{self.name} روشن شد! 🚗")\n    \n    def info(self):\n        return f"{self.name} ({self.color})"\n\ncar1 = Car("پرشیا", "سفید")\ncar1.start()\nprint(car1.info())`,
+            output: `پرشیا روشن شد! 🚗\nپرشیا (سفید)`
+        }];
+
+        // -------- متغیرهای DOM --------
+        const lessonListEl = document.getElementById('lessonList');
+        const lessonTitle = document.getElementById('lessonTitle');
+        const lessonMeta = document.getElementById('lessonMeta');
+        const lessonContent = document.getElementById('lessonContent');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const outputContentText = document.getElementById('outputContentText');
+
+        let currentLessonId = 1;
+
+        // -------- ساخت لیست درس‌ها --------
+        function renderLessonList() {
+            lessonListEl.innerHTML = '';
+            lessons.forEach(lesson => {
+                const btn = document.createElement('button');
+                btn.className = 'lesson-item' + (lesson.id === currentLessonId ? ' active' : '');
+                btn.dataset.id = lesson.id;
+                btn.innerHTML = `
+                    <i class="fas fa-${lesson.id <= 4 ? 'code' : lesson.id <= 8 ? 'list-ul' : 'layer-group'}"></i>
+                    درس ${lesson.id} · ${lesson.title}
+                    <span class="num">${lesson.id}</span>
+                `;
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    loadLesson(lesson.id);
+                });
+                lessonListEl.appendChild(btn);
+            });
+        }
+
+        // -------- بارگذاری یک درس --------
+        function loadLesson(id) {
+            const lesson = lessons.find(l => l.id === id);
+            if (!lesson) return;
+            
+            currentLessonId = id;
+            
+            lessonTitle.innerHTML = `<i class="fas fa-book"></i> درس ${lesson.id} · ${lesson.title}`;
+            lessonMeta.textContent = lesson.meta;
+            lessonContent.innerHTML = lesson.content;
+            
+            codeDisplay.textContent = lesson.code;
+
+            // به‌روزرسانی شماره خطوط
+            updateLineNumbers(lesson.code);
+
+            document.querySelectorAll('.lesson-item').forEach(el => {
+                el.classList.remove('active');
+                if (parseInt(el.dataset.id) === id) {
+                    el.classList.add('active');
+                }
+            });
+
+            // تنظیم خروجی پیش‌فرض
+            outputContentText.innerHTML = `<span class="info-text"><i class="fas fa-hand-pointer"></i> روی دکمه <span class="status-badge info">نمایش خروجی</span> کلیک کن...</span>`;
+        }
+
+        // -------- به‌روزرسانی شماره خطوط --------
+        function updateLineNumbers(code) {
+            const lines = code.split('\n').length;
+            const lineNumbersCol = document.querySelector('.line-numbers-col');
+            let html = '';
+            for (let i = 1; i <= Math.max(lines, 15); i++) {
+                html += `<span>${i}</span>`;
+            }
+            lineNumbersCol.innerHTML = html;
+        }
+
+        // -------- کپی کد --------
+        function copyCode() {
+            const code = codeDisplay.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                outputContentText.innerHTML = `<span class="success-text">✅ کد کپی شد! <i class="fas fa-check-circle"></i></span>`;
+                setTimeout(() => {
+                    const lesson = lessons.find(l => l.id === currentLessonId);
+                    if (lesson) {
+                        outputContentText.innerHTML = `<span class="info-text"><i class="fas fa-hand-pointer"></i> روی دکمه <span class="status-badge info">نمایش خروجی</span> کلیک کن...</span>`;
+                    }
+                }, 2000);
+            }).catch(() => {
+                outputContentText.innerHTML = `<span class="error-text">❌ کپی نشد. <i class="fas fa-exclamation-circle"></i></span>`;
+            });
+        }
+
+        // -------- نمایش خروجی از پیش تعیین شده --------
+        function runDisplayedCode() {
+            const lesson = lessons.find(l => l.id === currentLessonId);
+            if (lesson) {
+                let outputText = lesson.output || '📝 این درس خروجی مشخصی ندارد.';
+                
+                // فرمت‌دهی خروجی با رنگ‌ها
+                let formattedOutput = outputText.split('\n').map(line => {
+                    if (line.trim().startsWith('✅')) {
+                        return `<span class="success-text">✅ ${line.substring(1).trim()}</span>`;
+                    } else if (line.trim().startsWith('❌')) {
+                        return `<span class="error-text">❌ ${line.substring(1).trim()}</span>`;
+                    } else if (line.trim().startsWith('⚠️')) {
+                        return `<span class="warning-text">⚠️ ${line.substring(1).trim()}</span>`;
+                    } else if (line.trim().startsWith('(') && line.trim().endsWith(')')) {
+                        return `<span style="color:#6a8aa8; font-style:italic;">${line}</span>`;
+                    } else {
+                        return `<span>${line}</span>`;
+                    }
+                }).join('<br>');
+                
+                outputContentText.innerHTML = `
+                    <div style="margin-bottom:0.3rem; font-size:0.7rem; color:#6a8aa8; border-bottom:1px solid #2a2a3a; padding-bottom:0.2rem;">
+                        <i class="fas fa-clock" style="font-size:0.6rem;"></i> ${new Date().toLocaleTimeString('fa-IR')}
+                    </div>
+                    ${formattedOutput}
+                `;
+            } else {
+                outputContentText.innerHTML = `<span class="error-text">❌ خطا: درس پیدا نشد.</span>`;
+            }
+        }
+
+        // -------- مقداردهی اولیه --------
+        renderLessonList();
+        loadLesson(1);
+
+        console.log('🎓 ۱۲ درس پایتون با توضیحات 5000 کاراکتر و خروجی از پیش تعیین شده آماده‌ست!');
+    </script>
+
+</body>
+</html>
