@@ -15,12 +15,11 @@
         .logo i { color: #4b9eff; font-size: 1.8rem; }
         .badge { background: #2a323d; padding: 0.3rem 1rem; border-radius: 40px; font-size: 0.75rem; color: #b0c7e0; }
         .badge i { margin-left: 0.4rem; color: #4b9eff; }
-        
-        /* سایدبار */
         .sidebar-toggle { display: none; background: #1a2a3a; border: none; color: #b0c7e0; font-size: 1.5rem; padding: 0.3rem 0.8rem; border-radius: 8px; cursor: pointer; }
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; }
         .sidebar-overlay.open { display: block; }
         
+        /* سایدبار */
         .sidebar { position: fixed; top: 0; right: 0; width: 340px; height: 100vh; background: #0f1820; border-left: 1px solid #2a323d; overflow-y: auto; padding: 1.2rem 1rem; z-index: 300; transform: translateX(0); transition: transform 0.3s ease; }
         .sidebar.closed { transform: translateX(100%); }
         .sidebar-close { display: none; position: absolute; left: 0.8rem; top: 0.8rem; background: none; border: none; color: #b0c7e0; font-size: 1.5rem; cursor: pointer; }
@@ -41,7 +40,7 @@
         
         /* محتوا */
         .main-content { margin-right: 340px; padding: 1.5rem 2rem; min-height: 100vh; }
-        .lesson-panel { max-width: 900px; margin: 0 auto; }
+        .lesson-panel { max-width: 950px; margin: 0 auto; }
         .lesson-panel h2 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.3rem; color: #ffd866; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
         .lesson-panel h2 i { color: #4b9eff; }
         .lesson-meta { color: #7a94b0; font-size: 0.9rem; margin-bottom: 1.5rem; border-bottom: 1px solid #25303d; padding-bottom: 0.6rem; }
@@ -65,15 +64,24 @@
         .nav-buttons button:hover { background: #2a3a4a; border-color: #4b9eff; }
         .nav-buttons button:disabled { opacity: 0.3; cursor: not-allowed; }
         
+        /* جدول */
+        .data-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; direction: ltr; text-align: left; }
+        .data-table th { background: #1a2a3a; color: #ffd866; padding: 0.6rem 0.8rem; border: 1px solid #2a3a4a; font-weight: 600; }
+        .data-table td { padding: 0.6rem 0.8rem; border: 1px solid #1a2a3a; background: #0f1820; color: #b7d0ea; }
+        .data-table tr:hover td { background: #1a2533; }
+        .data-table .highlight { color: #81c995; }
+        .data-table .keyword-td { color: #ff6b6b; }
+        .data-table .string-td { color: #81c995; }
+        .data-table .number-td { color: #ffd866; }
+        .data-table .comment-td { color: #5a7a8a; font-style: italic; }
+        
         .footer { text-align: center; font-size: 0.7rem; color: #4a5a6a; padding: 1.5rem; border-top: 1px solid #1a2a3a; margin-top: 2rem; }
         
-        /* اسکرول */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #0a121a; }
         ::-webkit-scrollbar-thumb { background: #2a3a4a; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3a4a5a; }
         
-        /* ریسپانسیو */
         @media (max-width: 768px) {
             .sidebar-toggle { display: block; }
             .sidebar { width: 300px; }
@@ -82,11 +90,15 @@
             .main-content { margin-right: 0; padding: 1rem; }
             .header { padding: 0.8rem 1rem; }
             .lesson-panel h2 { font-size: 1.4rem; }
+            .data-table { font-size: 0.8rem; }
+            .data-table th, .data-table td { padding: 0.4rem 0.5rem; }
         }
         @media (max-width: 480px) {
             .sidebar { width: 280px; }
             .main-content { padding: 0.8rem; }
             .badge { font-size: 0.6rem; padding: 0.2rem 0.6rem; }
+            .data-table { font-size: 0.7rem; }
+            .data-table th, .data-table td { padding: 0.3rem 0.4rem; }
         }
     </style>
 </head>
@@ -132,7 +144,7 @@
 
 const lessonsData = [];
 
-// ===== فصل ۱: مبانی پایتون (درس ۱-۱۰) - کامل و جامع =====
+// ===== فصل ۱: مبانی پایتون (درس ۱-۱۰) - کاملاً کامل و جامع با جداول =====
 const ch1 = [
     {t:"سلام دنیا! 🚀", m:"چاپ، کامنت و ترمینال - شروع کار با پایتون",
      c:`# اولین برنامه پایتون\nprint("سلام دنیا!")\nprint("به دوره پایتون خوش آمدی!")\nprint("پایتون", "زبان", "برنامه‌نویسی", "عالی", "است")`,
@@ -296,7 +308,7 @@ const ch10 = [
 // ساخت آرایه کامل درس‌ها
 // ============================================================
 const allChapters = [
-    {num:1, name:"مبانی پایتون", data:ch1, start:1},
+    {num:1, name:"مبانی پایتون (کامل)", data:ch1, start:1},
     {num:2, name:"ساختارهای داده پیشرفته", data:ch2, start:11},
     {num:3, name:"کتابخانه استاندارد", data:ch3, start:21},
     {num:4, name:"کتابخانه‌های علمی", data:ch4, start:31},
@@ -312,10 +324,68 @@ const lessons = [];
 allChapters.forEach(ch => {
     ch.data.forEach((item, idx) => {
         const id = ch.start + idx;
+        // ساخت محتوای کامل برای درس ۲ (متغیرها و انواع داده) با جدول
+        let extraContent = '';
+        if (id === 2) {
+            extraContent = `
+                <h3 style="color:#ffd866;margin-top:1.5rem;">📊 جدول انواع داده در پایتون</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>نوع داده</th><th>توضیح</th><th>مثال</th><th>قابل تغییر</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="keyword-td">int</td><td>عدد صحیح</td><td class="number-td">25, -10, 0</td><td>❌</td></tr>
+                        <tr><td class="keyword-td">float</td><td>عدد اعشاری</td><td class="number-td">3.14, 2.5, -0.5</td><td>❌</td></tr>
+                        <tr><td class="keyword-td">str</td><td>رشته (متن)</td><td class="string-td">"سلام", 'سلام'</td><td>❌</td></tr>
+                        <tr><td class="keyword-td">bool</td><td>منطقی (درست/نادرست)</td><td class="keyword-td">True, False</td><td>❌</td></tr>
+                        <tr><td class="keyword-td">list</td><td>لیست (مجموعه مرتب)</td><td class="string-td">[1, 2, 3]</td><td>✅</td></tr>
+                        <tr><td class="keyword-td">tuple</td><td>تاپل (مجموعه غیرقابل تغییر)</td><td class="string-td">(1, 2, 3)</td><td>❌</td></tr>
+                        <tr><td class="keyword-td">dict</td><td>دیکشنری (کلید-مقدار)</td><td class="string-td">{"name": "علی"}</td><td>✅</td></tr>
+                        <tr><td class="keyword-td">set</td><td>مجموعه (بدون تکراری)</td><td class="string-td">{1, 2, 3}</td><td>✅</td></tr>
+                        <tr><td class="keyword-td">NoneType</td><td>عدم وجود مقدار</td><td class="keyword-td">None</td><td>❌</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 style="color:#ffd866;margin-top:1.5rem;">📝 تفاوت کوتیشن‌ها در پایتون</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>نوع کوتیشن</th><th>مثال</th><th>کاربرد</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="string-td">" "</td><td class="string-td">"سلام دنیا"</td><td>استاندارد - برای اکثر رشته‌ها</td></tr>
+                        <tr><td class="string-td">' '</td><td class="string-td">'سلام دنیا'</td><td>معادل کوتیشن دوتا - تفاوتی ندارد</td></tr>
+                        <tr><td class="string-td">""" """</td><td class="string-td">"""سلام\nدنیا"""</td><td>رشته‌های چندخطی - با <code>\\n</code> کار نمی‌کند</td></tr>
+                        <tr><td class="string-td">''' '''</td><td class="string-td">'''سلام\nدنیا'''</td><td>معادل سه کوتیشن دوتا</td></tr>
+                        <tr><td class="string-td">r" "</td><td class="string-td">r"C:\\Users\\name"</td><td>رشته خام (Raw) - برای مسیرها و Regex</td></tr>
+                        <tr><td class="string-td">f" "</td><td class="string-td">f"سلام {name}"</td><td>رشته فرمت‌شده (f-string) - درج متغیر</td></tr>
+                        <tr><td class="string-td">b" "</td><td class="string-td">b"hello"</td><td>رشته بایت (Bytes) - برای داده‌های باینری</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 style="color:#ffd866;margin-top:1.5rem;">🔣 کاراکترهای ویژه (Escape Sequences)</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr><th>کاراکتر</th><th>توضیح</th><th>مثال</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td class="string-td">\\n</td><td>خط جدید (New Line)</td><td class="string-td">"سلام\\nدنیا"</td></tr>
+                        <tr><td class="string-td">\\t</td><td>تب (Tab)</td><td class="string-td">"سلام\\tدنیا"</td></tr>
+                        <tr><td class="string-td">\\\\</td><td>بک‌اسلش (Backslash)</td><td class="string-td">"C:\\\\Users"</td></tr>
+                        <tr><td class="string-td">\\'</td><td>کوتیشن تک</td><td class="string-td">"علی گفت: \\'سلام\\'"</td></tr>
+                        <tr><td class="string-td">\\"</td><td>کوتیشن دوتا</td><td class="string-td">"علی گفت: \\"سلام\\""</td></tr>
+                        <tr><td class="string-td">\\r</td><td>بازگشت به ابتدا (Carriage Return)</td><td class="string-td">"سلام\\rجهان"</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="tip-box"><i class="fas fa-star" style="color:#ffd866;"></i><div><strong>نکته حرفه‌ای:</strong> در پایتون، <code>str</code> یک نوع داده غیرقابل تغییر (immutable) است. یعنی هر تغییری در یک رشته، یک رشته جدید ایجاد می‌کند. برای کار با رشته‌های طولانی و تغییرات زیاد، از <code>StringIO</code> یا <code>join()</code> استفاده کنید.</div></div>
+            `;
+        }
+        
         const content = `
             <p><i class="fas fa-star" style="color:#ffd866;"></i> <strong>${item.t}</strong></p>
             <p><strong>موضوع:</strong> ${item.m}</p>
-            <p>${item.m.split(' - ')[0]} یکی از مفاهیم کلیدی در پایتون است که در بسیاری از پروژه‌ها کاربرد دارد. با یادگیری این مفهوم، می‌توانید کدهای خود را حرفه‌ای‌تر و کارآمدتر بنویسید.</p>
+            ${id === 2 ? `<p>${item.m.split(' - ')[0]} یکی از مهم‌ترین مفاهیم در پایتون است. در این درس، تمام انواع داده، نحوه استفاده از کوتیشن‌ها و کاراکترهای ویژه را به طور کامل بررسی می‌کنیم.</p>` : `<p>${item.m.split(' - ')[0]} یکی از مفاهیم کلیدی در پایتون است که در بسیاری از پروژه‌ها کاربرد دارد. با یادگیری این مفهوم، می‌توانید کدهای خود را حرفه‌ای‌تر و کارآمدتر بنویسید.</p>`}
+            ${extraContent}
             <div class="tip-box"><i class="fas fa-lightbulb"></i><div><strong>نکته مهم:</strong> برای تسلط بر این مبحث، حتماً کدهای مثال را اجرا کنید و با تغییر دادن آنها، رفتار برنامه را بررسی کنید. تمرین و تکرار کلید یادگیری برنامه‌نویسی است.</div></div>
             <p><strong>کاربردهای عملی:</strong></p>
             <ul>
