@@ -2,1101 +2,447 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>آموزش پایتون · کد و خروجی زنده</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آموزش جامع پایتون · ۱۰۰ درس کامل</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0f14; color: #e4e9f0; padding: 0; min-height: 100vh; }
+        
+        /* هدر */
+        .header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.8rem; padding: 1rem 2rem; background: #111a22; border-bottom: 2px solid #2a323d; position: sticky; top: 0; z-index: 100; }
+        .logo { display: flex; align-items: center; gap: 0.6rem; font-size: 1.4rem; font-weight: 700; color: #ffd866; }
+        .logo i { color: #4b9eff; font-size: 1.8rem; }
+        .badge { background: #2a323d; padding: 0.3rem 1rem; border-radius: 40px; font-size: 0.75rem; color: #b0c7e0; }
+        .badge i { margin-left: 0.4rem; color: #4b9eff; }
+        
+        /* سایدبار */
+        .sidebar-toggle { display: none; background: #1a2a3a; border: none; color: #b0c7e0; font-size: 1.5rem; padding: 0.3rem 0.8rem; border-radius: 8px; cursor: pointer; }
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 200; }
+        .sidebar-overlay.open { display: block; }
+        
+        .sidebar { position: fixed; top: 0; right: 0; width: 340px; height: 100vh; background: #0f1820; border-left: 1px solid #2a323d; overflow-y: auto; padding: 1.2rem 1rem; z-index: 300; transform: translateX(0); transition: transform 0.3s ease; }
+        .sidebar.closed { transform: translateX(100%); }
+        .sidebar-close { display: none; position: absolute; left: 0.8rem; top: 0.8rem; background: none; border: none; color: #b0c7e0; font-size: 1.5rem; cursor: pointer; }
+        .sidebar h3 { color: #ffd866; font-size: 1.1rem; display: flex; align-items: center; gap: 0.6rem; border-bottom: 1px solid #2a3645; padding-bottom: 0.6rem; margin-bottom: 0.8rem; }
+        .sidebar h3 i { color: #4b9eff; }
+        .sidebar-search { width: 100%; padding: 0.5rem 0.8rem; background: #0a121a; border: 1px solid #1f2a38; border-radius: 10px; color: #e4e9f0; font-size: 0.85rem; margin-bottom: 0.8rem; }
+        .sidebar-search:focus { outline: none; border-color: #4b9eff; }
+        .lesson-list { display: flex; flex-direction: column; gap: 0.2rem; }
+        .lesson-item { background: transparent; border: none; color: #b7cbe5; padding: 0.4rem 0.7rem; border-radius: 8px; text-align: right; font-size: 0.82rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 0.5rem; font-weight: 500; border: 1px solid transparent; width: 100%; }
+        .lesson-item:hover { background: #1a2533; border-color: #2a3a4a; }
+        .lesson-item.active { background: #1a2533; border-color: #ffd866; color: #fff; }
+        .lesson-item i { color: #4b9eff; width: 1.2rem; font-size: 0.8rem; }
+        .lesson-item .num { color: #6a8aa8; font-size: 0.6rem; margin-left: auto; background: #0f1a25; padding: 0.05rem 0.4rem; border-radius: 40px; }
+        .lesson-item.chapter-header { color: #ffd866; font-weight: 700; font-size: 0.7rem; border-bottom: 1px solid #1a2a3a; padding: 0.3rem 0.2rem; margin-top: 0.3rem; cursor: default; background: transparent !important; border-color: transparent !important; }
+        .lesson-item.chapter-header i { color: #ffd866; }
+        .lesson-item.chapter-header .num { display: none; }
+        .sidebar-footer { margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid #1a2a3a; font-size: 0.6rem; color: #5a6a7a; text-align: center; }
+        
+        /* محتوا */
+        .main-content { margin-right: 340px; padding: 1.5rem 2rem; min-height: 100vh; }
+        .lesson-panel { max-width: 900px; margin: 0 auto; }
+        .lesson-panel h2 { font-size: 1.8rem; font-weight: 600; margin-bottom: 0.3rem; color: #ffd866; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+        .lesson-panel h2 i { color: #4b9eff; }
+        .lesson-meta { color: #7a94b0; font-size: 0.9rem; margin-bottom: 1.5rem; border-bottom: 1px solid #25303d; padding-bottom: 0.6rem; }
+        .lesson-content { font-size: 1.05rem; line-height: 2.4; color: #d4deec; }
+        .lesson-content p { margin: 1.2rem 0; }
+        .lesson-content strong { color: #ffd866; }
+        .lesson-content code { background: #1a2533; padding: 0.2rem 0.6rem; border-radius: 6px; font-family: 'Courier New', monospace; font-size: 0.9rem; color: #b7d0ea; }
+        .lesson-content ul { padding-right: 1.5rem; margin: 0.8rem 0; }
+        .lesson-content ul li { margin: 0.4rem 0; list-style-type: none; }
+        .lesson-content ul li::before { content: "▸ "; color: #4b9eff; }
+        .tip-box { background: #1a2533; padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid #2a3a4a; margin: 1.5rem 0; display: flex; gap: 0.8rem; align-items: flex-start; }
+        .tip-box i { color: #ffd866; font-size: 1.4rem; margin-top: 0.2rem; }
+        .code-block { background: #0f1820; border: 1px solid #1a2a3a; border-radius: 10px; padding: 1rem; margin: 1rem 0; overflow-x: auto; direction: ltr; text-align: left; font-family: 'Courier New', monospace; font-size: 0.9rem; color: #b7d0ea; white-space: pre-wrap; }
+        .code-block .comment { color: #5a7a8a; }
+        .code-block .keyword { color: #ff6b6b; }
+        .code-block .string { color: #81c995; }
+        .code-block .function { color: #4b9eff; }
+        .code-block .number { color: #ffd866; }
+        .nav-buttons { display: flex; gap: 1rem; margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid #1a2a3a; flex-wrap: wrap; }
+        .nav-buttons button { background: #1a2533; border: 1px solid #2a3a4a; color: #b7cbe5; padding: 0.5rem 1.5rem; border-radius: 30px; cursor: pointer; font-size: 0.9rem; transition: 0.2s; display: flex; align-items: center; gap: 0.5rem; }
+        .nav-buttons button:hover { background: #2a3a4a; border-color: #4b9eff; }
+        .nav-buttons button:disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        .footer { text-align: center; font-size: 0.7rem; color: #4a5a6a; padding: 1.5rem; border-top: 1px solid #1a2a3a; margin-top: 2rem; }
+        
+        /* اسکرول */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0a121a; }
+        ::-webkit-scrollbar-thumb { background: #2a3a4a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a4a5a; }
+        
+        /* ریسپانسیو */
+        @media (max-width: 768px) {
+            .sidebar-toggle { display: block; }
+            .sidebar { width: 300px; }
+            .sidebar.closed { transform: translateX(100%); }
+            .sidebar-close { display: block; }
+            .main-content { margin-right: 0; padding: 1rem; }
+            .header { padding: 0.8rem 1rem; }
+            .lesson-panel h2 { font-size: 1.4rem; }
         }
-
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #0a0f14;
-            color: #e4e9f0;
-            padding: 0.8rem;
-            min-height: 100vh;
-        }
-
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 0.8rem;
-            margin-bottom: 1.2rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 2px solid #2a323d;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #ffd866;
-        }
-
-        .logo i {
-            color: #4b9eff;
-            font-size: 1.8rem;
-        }
-
-        .badge {
-            background: #2a323d;
-            padding: 0.3rem 1rem;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            color: #b0c7e0;
-            white-space: nowrap;
-        }
-
-        .badge i {
-            margin-left: 0.4rem;
-            color: #4b9eff;
-        }
-
-        .main-grid {
-            display: grid;
-            grid-template-columns: 280px 1fr 1fr;
-            gap: 1rem;
-            align-items: stretch;
-        }
-
-        @media (max-width: 1200px) {
-            .main-grid {
-                grid-template-columns: 1fr 1fr;
-            }
-            .sidebar {
-                grid-column: 1 / -1;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-            .sidebar .lesson-list {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 0.4rem;
-            }
-            .sidebar .lesson-list .lesson-item {
-                flex: 0 0 auto;
-                padding: 0.4rem 0.8rem;
-                font-size: 0.85rem;
-            }
-        }
-
-        @media (max-width: 700px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-                gap: 0.8rem;
-            }
-            .sidebar {
-                grid-column: 1;
-                max-height: none;
-                overflow-y: visible;
-                padding: 1rem 0.8rem;
-                border-radius: 20px;
-            }
-            .sidebar h3 {
-                font-size: 1rem;
-                margin-bottom: 0.8rem;
-            }
-            .lesson-item {
-                padding: 0.5rem 0.8rem;
-                font-size: 0.85rem;
-            }
-            .lesson-panel {
-                padding: 1.2rem 1rem;
-                border-radius: 20px;
-                max-height: none;
-                overflow-y: visible;
-            }
-            .lesson-panel h2 {
-                font-size: 1.3rem;
-            }
-            .lesson-content {
-                font-size: 0.95rem;
-                line-height: 1.8;
-            }
-            .vscode-panel {
-                border-radius: 12px;
-            }
-            .vscode-body-wrapper {
-                min-height: 120px;
-                max-height: 200px;
-            }
-            .vscode-output {
-                min-height: 200px;
-                max-height: 500px;
-                font-size: 0.8rem;
-                padding: 0.6rem 0.8rem;
-            }
-            .code-content-col {
-                padding: 0.6rem 0.6rem;
-                font-size: 0.75rem;
-            }
-            #codeDisplay {
-                font-size: 0.75rem;
-                line-height: 1.6;
-            }
-            .line-numbers-col {
-                min-width: 2rem;
-                font-size: 0.7rem;
-                padding: 0.6rem 0;
-            }
-            .line-numbers-col span {
-                padding: 0 0.3rem;
-            }
-            .btn-run-code {
-                padding: 0.3rem 0.8rem;
-                font-size: 0.75rem;
-            }
-            .vscode-tabs {
-                padding: 0.2rem 0.6rem;
-                gap: 0.2rem;
-                flex-wrap: wrap;
-            }
-            .vscode-tab {
-                padding: 0.2rem 0.6rem;
-                font-size: 0.65rem;
-            }
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-        }
-
         @media (max-width: 480px) {
-            body {
-                padding: 0.4rem;
-            }
-            .lesson-panel {
-                padding: 0.8rem 0.6rem;
-            }
-            .vscode-output {
-                min-height: 150px;
-                max-height: 400px;
-                font-size: 0.75rem;
-                padding: 0.4rem 0.6rem;
-            }
-            .vscode-body-wrapper {
-                min-height: 80px;
-                max-height: 150px;
-            }
-            .sidebar .lesson-item {
-                font-size: 0.75rem;
-                padding: 0.3rem 0.6rem;
-            }
-            .logo {
-                font-size: 1.2rem;
-            }
-            .badge {
-                font-size: 0.65rem;
-                padding: 0.2rem 0.7rem;
-            }
-        }
-
-        .sidebar {
-            background: #141c26;
-            border-radius: 28px;
-            padding: 1.5rem 1rem;
-            border: 1px solid #25303d;
-            max-height: 85vh;
-            overflow-y: auto;
-        }
-
-        .sidebar h3 {
-            color: #ffd866;
-            font-size: 1.2rem;
-            margin-bottom: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            border-bottom: 1px solid #2a3645;
-            padding-bottom: 0.8rem;
-        }
-
-        .lesson-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.3rem;
-        }
-
-        .lesson-item {
-            background: transparent;
-            border: none;
-            color: #b7cbe5;
-            padding: 0.7rem 1rem;
-            border-radius: 14px;
-            text-align: right;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 0.7rem;
-            font-weight: 500;
-            border: 1px solid transparent;
-            width: 100%;
-        }
-
-        .lesson-item i {
-            color: #4b9eff;
-            width: 1.4rem;
-            font-size: 0.9rem;
-        }
-
-        .lesson-item:hover {
-            background: #1f2a38;
-            border-color: #3a4b60;
-        }
-
-        .lesson-item.active {
-            background: #1f2a38;
-            border-color: #ffd866;
-            color: #fff;
-            box-shadow: 0 0 0 1px #ffd86633;
-        }
-
-        .lesson-item .num {
-            color: #6e8aa8;
-            font-size: 0.75rem;
-            margin-left: auto;
-            background: #1f2a36;
-            padding: 0.1rem 0.6rem;
-            border-radius: 40px;
-        }
-
-        .lesson-panel {
-            background: #171f28;
-            border-radius: 28px;
-            padding: 1.8rem 2rem;
-            border: 1px solid #2b3643;
-            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.7);
-            overflow-y: auto;
-            max-height: 85vh;
-        }
-
-        .lesson-panel h2 {
-            font-size: 1.6rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #ffd866;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
-
-        .lesson-panel h2 i {
-            color: #4b9eff;
-        }
-
-        .lesson-meta {
-            color: #7a94b0;
-            font-size: 0.85rem;
-            margin-bottom: 1.2rem;
-            border-bottom: 1px solid #25303d;
-            padding-bottom: 0.6rem;
-        }
-
-        .lesson-content {
-            font-size: 1.05rem;
-            line-height: 2;
-            color: #d4deec;
-        }
-
-        .lesson-content p {
-            margin: 1.2rem 0;
-        }
-
-        .lesson-content strong {
-            color: #ffd866;
-        }
-
-        .lesson-content code {
-            background: #1f2a36;
-            padding: 0.2rem 0.6rem;
-            border-radius: 8px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-            color: #b7d0ea;
-        }
-
-        .lesson-content ul {
-            padding-right: 1.5rem;
-            margin: 0.8rem 0;
-        }
-
-        .lesson-content ul li {
-            margin: 0.4rem 0;
-            list-style-type: none;
-        }
-
-        .lesson-content ul li::before {
-            content: "▸ ";
-            color: #4b9eff;
-        }
-
-        .tip-box {
-            background: #1e2d3d;
-            padding: 1rem 1.5rem;
-            border-radius: 16px;
-            border: 1px solid #3b5068;
-            margin: 1.5rem 0;
-            display: flex;
-            gap: 0.8rem;
-            align-items: flex-start;
-        }
-
-        .tip-box i {
-            color: #ffd866;
-            font-size: 1.4rem;
-            margin-top: 0.2rem;
-        }
-
-        .footer {
-            margin-top: 2rem;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #5b728b;
-            border-top: 1px solid #212b36;
-            padding-top: 1.2rem;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0e141c;
-            border-radius: 12px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #35485e;
-            border-radius: 12px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #4b637e;
-        }
-
-        .btn-run-code {
-            background: linear-gradient(145deg, #1f7b4d, #1a6b42);
-            border: none;
-            color: #fff;
-            padding: 0.7rem 2rem;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 1.05rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 0.8rem;
-            border: 1px solid #2a9d6e;
-            box-shadow: 0 4px 15px rgba(31, 123, 77, 0.3);
-        }
-
-        .btn-run-code:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 6px 25px rgba(31, 123, 77, 0.5);
-            background: linear-gradient(145deg, #2a9d6e, #1f7b4d);
-        }
-
-        .btn-run-code:active {
-            transform: scale(0.95);
-        }
-
-        .btn-run-code i {
-            font-size: 1.2rem;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin: 0 0.3rem;
-        }
-
-        .status-badge.success {
-            background: #1a6b42;
-            color: #81c995;
-        }
-
-        .status-badge.info {
-            background: #1a3a5a;
-            color: #6eb5ff;
-        }
-
-        /* ===== VS Code Style ===== */
-        .vscode-panel {
-            background: #1e1e2e;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid #2a2a3a;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-            margin-top: 0.5rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .vscode-tabs {
-            background: #252535;
-            padding: 0.3rem 1rem;
-            display: flex;
-            gap: 0.3rem;
-            border-bottom: 1px solid #3a3a4a;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .vscode-tab {
-            padding: 0.4rem 1rem;
-            font-size: 0.75rem;
-            color: #9a9aae;
-            border-radius: 6px 6px 0 0;
-            cursor: default;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: transparent;
-            border: none;
-        }
-
-        .vscode-tab.active {
-            background: #1e1e2e;
-            color: #d4d4e0;
-        }
-
-        .vscode-tab i {
-            font-size: 0.7rem;
-        }
-
-        .vscode-body-wrapper {
-            display: flex;
-            background: #1e1e2e;
-            min-height: 180px;
-            max-height: 350px;
-            overflow-y: auto;
-        }
-
-        .line-numbers-col {
-            padding: 0.8rem 0;
-            min-width: 2.5rem;
-            text-align: left;
-            color: #4a4a5e;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.8rem;
-            user-select: none;
-            line-height: 1.8;
-            background: #1e1e2e;
-            border-right: 1px solid #2a2a3a;
-            padding-right: 0.3rem;
-            flex-shrink: 0;
-        }
-
-        .line-numbers-col span {
-            display: block;
-            padding: 0 0.5rem;
-        }
-
-        .code-content-col {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            background: #1e1e2e;
-            overflow-x: auto;
-        }
-
-        #codeDisplay {
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            font-family: 'Fira Code', 'Cascadia Code', monospace;
-            font-size: 0.85rem;
-            line-height: 1.8;
-            color: #d4d4e0;
-            white-space: pre-wrap;
-            word-break: break-word;
-            direction: ltr;
-            text-align: left;
-        }
-
-        .vscode-output {
-            background: #1a1a2a;
-            border-top: 1px solid #2a2a3a;
-            padding: 0.8rem 1.2rem;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.85rem;
-            color: #b7d0ea;
-            white-space: pre-wrap;
-            word-break: break-word;
-            min-height: 200px;
-            max-height: 600px;
-            overflow-y: auto;
-            direction: ltr;
-            text-align: left;
-            line-height: 1.8;
-            transition: min-height 0.3s ease;
-        }
-
-        .vscode-output .output-label {
-            color: #6a8aa8;
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            border-bottom: 1px solid #2a2a3a;
-            padding-bottom: 0.3rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .vscode-output .output-label i {
-            color: #81c995;
-        }
-
-        .output-content-text .success-text {
-            color: #81c995;
-        }
-        .output-content-text .error-text {
-            color: #f28b82;
-        }
-        .output-content-text .info-text {
-            color: #6eb5ff;
-        }
-        .output-content-text .warning-text {
-            color: #ffd866;
-        }
-
-        /* تنظیم ارتفاع خودکار خروجی بر اساس محتوا */
-        .vscode-output.expanded {
-            min-height: 300px;
-            max-height: 800px;
-        }
-
-        @media (max-width: 700px) {
-            .vscode-output {
-                min-height: 150px;
-                max-height: 450px;
-                font-size: 0.8rem;
-                padding: 0.6rem 0.8rem;
-            }
-            .vscode-output.expanded {
-                min-height: 200px;
-                max-height: 500px;
-            }
-            .vscode-body-wrapper {
-                min-height: 120px;
-                max-height: 250px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .vscode-output {
-                min-height: 120px;
-                max-height: 350px;
-                font-size: 0.7rem;
-                padding: 0.4rem 0.6rem;
-            }
-            .vscode-output.expanded {
-                min-height: 150px;
-                max-height: 400px;
-            }
-            .vscode-body-wrapper {
-                min-height: 80px;
-                max-height: 180px;
-            }
+            .sidebar { width: 280px; }
+            .main-content { padding: 0.8rem; }
+            .badge { font-size: 0.6rem; padding: 0.2rem 0.6rem; }
         }
     </style>
 </head>
 <body>
 
-    <header class="header">
-        <div class="logo">
-            <i class="fab fa-python"></i>
-            <span>پایتون‌آموز</span>
-        </div>
-        <div class="badge">
-            <i class="fas fa-graduation-cap"></i> ۱۲ درس · از صفر تا پیشرفته
-        </div>
-    </header>
-
-    <div class="main-grid">
-
-        <!-- ===== SIDEBAR ===== -->
-        <aside class="sidebar">
-            <h3><i class="fas fa-list-ul"></i> فهرست درس‌ها</h3>
-            <div class="lesson-list" id="lessonList"></div>
-        </aside>
-
-        <!-- ===== LESSON PANEL ===== -->
-        <section class="lesson-panel" id="lessonPanel">
-            <h2 id="lessonTitle"><i class="fas fa-book"></i> درس ۱</h2>
-            <div class="lesson-meta" id="lessonMeta">مفاهیم پایه</div>
-            <div class="lesson-content" id="lessonContent"></div>
-        </section>
-
-        <!-- ===== CODE + OUTPUT PANEL (VS Code Style) ===== -->
-        <section class="lesson-panel" style="display: flex; flex-direction: column; padding: 1.2rem 1.5rem;">
-            <h2 style="font-size:1.2rem; margin-bottom:0.3rem; color:#ffd866;">
-                <i class="fas fa-terminal"></i> کد · خروجی
-            </h2>
-            <div style="color:#7a94b0; font-size:0.75rem; margin-bottom:0.8rem; border-bottom:1px solid #25303d; padding-bottom:0.4rem;">
-                <i class="fas fa-code"></i> کد را ببین و خروجی را اجرا کن
-            </div>
-
-            <!-- VS Code Style Panel -->
-            <div class="vscode-panel">
-                <!-- Tabs -->
-                <div class="vscode-tabs">
-                    <button class="vscode-tab active">
-                        <i class="fab fa-python" style="color:#4b9eff;"></i> main.py
-                        <span class="close-btn"><i class="fas fa-times"></i></span>
-                    </button>
-                    <button class="vscode-tab">
-                        <i class="fas fa-file-code"></i> output
-                        <span class="close-btn"><i class="fas fa-times"></i></span>
-                    </button>
-                    <span style="color:#4a4a5e; font-size:0.6rem; margin-right:auto;">
-                        <i class="fas fa-circle" style="color:#81c995; font-size:0.4rem;"></i> Python 3.12
-                    </span>
-                </div>
-
-                <!-- Body with line numbers -->
-                <div class="vscode-body-wrapper">
-                    <div class="line-numbers-col" id="lineNumbers">
-                        <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
-                        <span>6</span><span>7</span><span>8</span><span>9</span><span>10</span>
-                        <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
-                    </div>
-                    <div class="code-content-col">
-                        <pre id="codeDisplay"># کد خود را اینجا ببینید</pre>
-                    </div>
-                </div>
-
-                <!-- دکمه اجرا -->
-                <div style="padding: 0.5rem 1rem; background: #1a1a2a; border-top: 1px solid #2a2a3a; display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
-                    <button class="btn-run-code" onclick="runDisplayedCode()" style="padding:0.4rem 1.2rem; font-size:0.85rem; margin-top:0;">
-                        <i class="fas fa-play"></i> نمایش خروجی
-                        <i class="fas fa-arrow-left"></i>
-                    </button>
-                    <button onclick="copyCode()" style="background: #2a2a3a; border: none; color: #b7cbe5; padding: 0.3rem 1rem; border-radius: 20px; cursor: pointer; font-size:0.75rem;">
-                        <i class="fas fa-copy"></i> کپی
-                    </button>
-                    <span style="color:#4a6a8a; font-size:0.65rem; margin-right:auto;">
-                        <i class="fas fa-keyboard"></i> کلیک برای نمایش خروجی
-                    </span>
-                </div>
-
-                <!-- Output با ارتفاع خودکار -->
-                <div class="vscode-output" id="outputDisplay">
-                    <div class="output-label">
-                        <i class="fas fa-window-maximize"></i> خروجی
-                        <span style="margin-right:auto; font-size:0.55rem; color:#4a6a8a;">
-                            <i class="fas fa-circle" style="color:#6a8aa8;"></i> آماده
-                        </span>
-                    </div>
-                    <div class="output-content-text" id="outputContentText">
-                        <span class="info-text"><i class="fas fa-hand-pointer"></i> روی دکمه <span class="status-badge info">نمایش خروجی</span> کلیک کن...</span>
-                    </div>
-                </div>
-            </div>
-
-            <div style="margin-top:0.5rem; font-size:0.65rem; color:#4a6a8a; display:flex; gap:1rem; flex-wrap:wrap;">
-                <span><i class="fas fa-code"></i> ۱۲ درس</span>
-                <span><i class="fas fa-sync-alt"></i> کد هر درس به‌روز می‌شود</span>
-                <span><i class="fas fa-copy"></i> کپی کد</span>
-            </div>
-        </section>
+<!-- هدر -->
+<header class="header">
+    <div style="display:flex;align-items:center;gap:1rem;">
+        <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="logo"><i class="fab fa-python"></i><span>پایتون‌آموز</span></div>
     </div>
+    <div class="badge"><i class="fas fa-graduation-cap"></i> ۱۰۰ درس · ۱۰ فصل</div>
+</header>
 
-    <footer class="footer">
-        <i class="fas fa-heart" style="color:#ff6b6b;"></i>پایتون آموز؛تمامی حقوق برای تیم های سامنوویکس و گام اول محفوظ است
-        <span style="display:block; margin-top:0.3rem; font-size:0.65rem; color:#4a6a8a;">
-            <i class="fas fa-code"></i> با <i class="fas fa-coffee"></i> و <i class="fas fa-mug-hot"></i>
-        </span>
-    </footer>
+<!-- سایدبار -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar closed" id="sidebar">
+    <button class="sidebar-close" onclick="toggleSidebar()"><i class="fas fa-times"></i></button>
+    <h3><i class="fas fa-list-ul"></i> فهرست درس‌ها</h3>
+    <input class="sidebar-search" id="lessonSearch" placeholder="🔍 جستجو در درس‌ها..." oninput="filterLessons()">
+    <div class="lesson-list" id="lessonList"></div>
+    <div class="sidebar-footer">۱۰۰ درس کامل · از صفر تا پیشرفته</div>
+</aside>
 
-    <script>
-        // -------- داده‌های ۱۲ درس با توضیحات 5000 کاراکتر و خروجی از پیش تعیین شده --------
-        const lessons = [{
-            id: 1,
-            title: "سلام دنیا! 🚀",
-            meta: "آشنایی با چاپ، کامنت و ترمینال",
-            content: `
-                <p><i class="fas fa-star" style="color:#ffd866;"></i> <strong>خوش آمدی به دنیای پایتون!</strong></p>
-                <p>اولین برنامه‌ای که هر برنامه‌نویسی می‌نویسه، چاپ عبارت "سلام دنیا" است. این کار با تابع <code>print()</code> انجام میشه. تابع print یکی از پرکاربردترین توابع در پایتون است و برای نمایش خروجی در ترمینال استفاده می‌شود. شما می‌توانید هر تعداد آرگومان به آن بدهید و با کاما از هم جدا کنید. همچنین می‌توانید از پارامترهای <code>sep</code> (جداکننده) و <code>end</code> (پایان‌دهنده) برای کنترل نحوه نمایش استفاده کنید. به عنوان مثال، <code>print("سلام", "دنیا", sep="-")</code> خروجی <code>سلام-دنیا</code> را نمایش می‌دهد. و <code>print("سلام", end="!")</code> خروجی <code>سلام!</code> را نمایش می‌دهد و به خط بعدی نمی‌رود.</p>
-                <div class="tip-box"><i class="fas fa-terminal"></i><div><strong>ترمینال چیست؟</strong> ترمینال یا خط فرمان، محیطی برای اجرای کدها و دیدن خروجی آنهاست. در این آموزش، خروجی کد را در کادر آبی رنگ زیر می‌بینید. ترمینال به شما امکان می‌دهد برنامه‌های خود را اجرا کنید و نتیجه را مشاهده نمایید. در پایتون، تابع print() خروجی را در ترمینال نمایش می‌دهد. ترمینال در واقع یک رابط متنی است که شما می‌توانید دستورات خود را در آن وارد کنید و نتیجه را ببینید. در سیستم‌عامل‌های مختلف، ترمینال نام‌های متفاوتی دارد: در ویندوز به آن Command Prompt یا PowerShell می‌گویند، در لینوکس و مک به آن Terminal می‌گویند. اما همه آنها یک کار را انجام می‌دهند: اجرای دستورات و نمایش خروجی.</div></div>
-                <p><strong>کامنت‌ها</strong> با <code>#</code> شروع می‌شوند و برای توضیح کد استفاده می‌شوند. کامنت‌ها اجرا نمی‌شوند و فقط برای خوانایی کد هستند. استفاده از کامنت‌های خوب، کد شما را برای دیگران (و خودتان در آینده) قابل فهم‌تر می‌کند. کامنت‌ها می‌توانند در یک خط جداگانه باشند یا در انتهای یک خط کد قرار بگیرند. همچنین می‌توانید از کامنت‌های چندخطی با استفاده از سه نقل قول <code>'''</code> یا <code>"""</code> استفاده کنید که معمولاً برای مستندسازی توابع و کلاس‌ها به کار می‌روند.</p>
-                <p>🔹 تابع <code>print()</code> یک یا چند ورودی می‌گیرد و آنها را در خروجی نمایش می‌دهد. می‌توانید هر تعداد آرگومان به آن بدهید و با کاما جدا کنید.</p>
-                <p>📌 <span class="highlight">نکته مهم:</span> در پایتون، فاصله و تورفتگی (Indentation) بسیار مهم است. بر خلاف بسیاری از زبان‌ها که از آکولاد استفاده می‌کنند، پایتون از فاصله برای مشخص کردن بلوک‌های کد استفاده می‌کند. این یکی از ویژگی‌های منحصر به فرد پایتون است که کد را تمیز و خوانا می‌کند. معمولاً از ۴ فاصله یا یک Tab برای تورفتگی استفاده می‌شود. اگر تورفتگی را رعایت نکنید، برنامه با خطا مواجه می‌شود. این قانون به خصوص در ساختارهای شرطی، حلقه‌ها و توابع بسیار مهم است.</p>
-                <p>پایتون یک زبان برنامه‌نویسی سطح بالا، تفسیری و شی‌گرا است که توسط گیدو ون روسوم در سال ۱۹۹۱ ایجاد شد. این زبان به دلیل سادگی، خوانایی بالا و قدرتمند بودن، به یکی از محبوب‌ترین زبان‌های برنامه‌نویسی در جهان تبدیل شده است. پایتون در حوزه‌های مختلفی مانند توسعه وب، علم داده، هوش مصنوعی، اتوماسیون، و توسعه نرم‌افزار استفاده می‌شود. یکی از دلایل محبوبیت پایتون، کتابخانه‌های گسترده و جامعه بزرگ آن است. شما می‌توانید با استفاده از پایتون، برنامه‌های ساده تا بسیار پیچیده را توسعه دهید.</p>
-            `,
-            code: `# اولین برنامه پایتون\nprint("سلام دنیا!")\nprint("به دوره پایتون خوش آمدی!")\nprint("پایتون", "زبان", "برنامه‌نویسی", "عالی", "است")`,
-            output: `سلام دنیا!\nبه دوره پایتون خوش آمدی!\nپایتون زبان برنامه‌نویسی عالی است`
-        }, {
-            id: 2,
-            title: "متغیرها و انواع داده 📦",
-            meta: "عدد، رشته، بولین و تایپ داده",
-            content: `
-                <p><strong>متغیر</strong> مانند یک جعبه برای نگهداری داده است. در پایتون نیازی به تعیین نوع متغیر نیست و خود زبان تشخیص می‌دهد. این ویژگی پایتون را بسیار انعطاف‌پذیر می‌کند و به شما اجازه می‌دهد بدون نگرانی از نوع داده، کد بنویسید. پایتون یک زبان با نوع‌دهی پویا (Dynamic Typing) است، یعنی نوع متغیر در زمان اجرا مشخص می‌شود و می‌توانید در طول اجرا، نوع داده یک متغیر را تغییر دهید. به عنوان مثال، می‌توانید یک متغیر را ابتدا به عنوان عدد صحیح تعریف کنید و سپس به رشته تغییر دهید.</p>
-                <p>انواع داده اصلی در پایتون:</p>
-                <ul>
-                    <li><code>str</code> (رشته) : متن مانند <code>"سلام"</code> یا <code>'سلام'</code> - رشته‌ها در پایتون immutable (غیرقابل تغییر) هستند</li>
-                    <li><code>int</code> (عدد صحیح) : مانند <code>25</code> یا <code>-10</code> - اعداد صحیح بدون محدودیت اندازه</li>
-                    <li><code>float</code> (عدد اعشاری) : مانند <code>3.14</code> یا <code>2.5</code> - اعداد اعشاری با دقت دوگانه</li>
-                    <li><code>bool</code> (منطقی) : فقط <code>True</code> یا <code>False</code> - برای شرایط و تصمیم‌گیری</li>
-                    <li><code>list</code> (لیست) : مجموعه‌ای از مقادیر مانند <code>[1, 2, 3]</code> - قابل تغییر و مرتب</li>
-                    <li><code>tuple</code> (تاپل) : مانند لیست اما غیرقابل تغییر <code>(1, 2, 3)</code> - برای داده‌های ثابت</li>
-                    <li><code>dict</code> (دیکشنری) : کلید-مقدار مانند <code>{"name": "علی"}</code> - برای ذخیره داده‌های مرتبط</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-lightbulb"></i><div>برای دیدن نوع متغیر از تابع <code>type()</code> استفاده کن. این تابع نوع داده متغیر را به شما نشان می‌دهد و برای دیباگ کردن بسیار مفید است. همچنین می‌توانید از تابع <code>isinstance()</code> برای بررسی نوع داده استفاده کنید.</div></div>
-                <p>📌 <span class="highlight">نکته مهم:</span> نام متغیرها باید با حرف یا زیرخط شروع شوند و نمی‌توانند با عدد شروع شوند. همچنین از کلمات کلیدی پایتون (مانند if, for, while, def, class, import) نمی‌توان به عنوان نام متغیر استفاده کرد. نام متغیرها به حروف بزرگ و کوچک حساس هستند، یعنی <code>name</code> و <code>Name</code> دو متغیر متفاوت هستند. بهتر است از نام‌های توصیفی استفاده کنید تا کد شما خوانا باشد. همچنین از استانداردهای نام‌گذاری مانند snake_case (مثلاً <code>my_variable</code>) برای متغیرها و CamelCase برای کلاس‌ها استفاده کنید.</p>
-                <p>در پایتون، همه چیز یک شیء است! حتی اعداد و رشته‌ها هم شیء هستند و متدهای خاص خود را دارند. به عنوان مثال، رشته‌ها متدهایی مانند <code>upper()</code>، <code>lower()</code>، <code>split()</code> و غیره دارند. این ویژگی پایتون را بسیار قدرتمند و منعطف می‌کند و به شما اجازه می‌دهد از متدهای مختلف روی داده‌ها استفاده کنید. همچنین پایتون از نوع‌دهی تدریجی (Gradual Typing) با استفاده از type hints پشتیبانی می‌کند که به شما امکان می‌دهد نوع داده را به صورت اختیاری مشخص کنید و از ابزارهای تحلیل ایستا استفاده کنید. این ویژگی در پروژه‌های بزرگ بسیار مفید است و به خوانایی و نگهداری کد کمک می‌کند.</p>
-            `,
-            code: `name = "علی"\nage = 22\nheight = 1.78\nis_student = True\nprint("نام:", name)\nprint("سن:", age)\nprint("قد:", height)\nprint("دانشجو:", is_student)`,
-            output: `نام: علی\nسن: 22\nقد: 1.78\nدانشجو: True`
-        }, {
-            id: 3,
-            title: "ورودی گرفتن از کاربر ⌨️",
-            meta: "input() و تبدیل نوع",
-            content: `
-                <p>با تابع <code>input()</code> می‌توان از کاربر ورودی گرفت. این تابع اجرای برنامه را متوقف می‌کند تا کاربر چیزی وارد کند و سپس با زدن Enter، برنامه ادامه پیدا می‌کند. این تابع همیشه <strong>رشته</strong> برمی‌گرداند، حتی اگر کاربر عدد وارد کند. بنابراین برای دریافت عدد، باید ورودی را با <code>int()</code> یا <code>float()</code> تبدیل کنیم. این تابع یک آرگومان اختیاری به عنوان پیام ورودی می‌گیرد که به کاربر نشان داده می‌شود. پیام ورودی می‌تواند شامل توضیحاتی باشد که به کاربر کمک کند بداند چه چیزی باید وارد کند.</p>
-                <p>برای دریافت عدد، باید ورودی را با <code>int()</code> یا <code>float()</code> تبدیل کنیم. اگر کاربر به جای عدد، متن وارد کند، برنامه با خطا مواجه می‌شود که بعداً در درس مدیریت خطا، نحوه برخورد با آن را یاد می‌گیریم. همیشه بهتر است ورودی کاربر را اعتبارسنجی کنید تا از بروز خطا جلوگیری شود. می‌توانید از حلقه‌ها و شرط‌ها برای تکرار درخواست تا زمانی که کاربر ورودی معتبر وارد کند، استفاده کنید. به عنوان مثال، می‌توانید از یک حلقه while استفاده کنید که تا زمانی که کاربر عدد وارد نکند، از او سوال کند.</p>
-                <div class="tip-box"><i class="fas fa-exclamation-triangle"></i><div><strong>هشدار:</strong> اگر کاربر ورودی نامعتبر وارد کند (مثلاً به جای عدد، حرف بزند)، برنامه با خطا متوقف می‌شود. برای جلوگیری از این مشکل، از try/except استفاده می‌کنیم که در درس دهم یاد می‌گیرید. همچنین می‌توانید از توابع <code>isnumeric()</code> و <code>isdigit()</code> برای بررسی ورودی قبل از تبدیل استفاده کنید.</div></div>
-                <p><strong>نکته:</strong> در این محیط، ورودی را در پنجره گفتگو (prompt) وارد کنید. وقتی کد اجرا می‌شود، پنجره‌ای باز می‌شود و از شما ورودی می‌خواهد. در محیط‌های واقعی، ورودی از طریق ترمینال انجام می‌شود. همچنین می‌توانید از <code>sys.stdin</code> برای ورودی‌های پیشرفته‌تر استفاده کنید.</p>
-                <p>📌 <span class="highlight">کاربرد:</span> از ورودی کاربر برای شخصی‌سازی برنامه‌ها، گرفتن اطلاعات، ایجاد تعامل با کاربر، ساخت برنامه‌های تعاملی، و دریافت تنظیمات از کاربر استفاده می‌شود. به عنوان مثال، در برنامه‌های خط فرمان، از ورودی برای دریافت دستورات کاربر استفاده می‌شود. در برنامه‌های گرافیکی، از ورودی برای دریافت اطلاعات از طریق فرم‌ها استفاده می‌شود. ورودی گرفتن از کاربر یکی از مهم‌ترین مفاهیم در برنامه‌نویسی است زیرا برنامه‌ها را تعاملی می‌کند. بدون ورودی، برنامه‌ها فقط خروجی ثابتی دارند و نمی‌توانند به نیازهای مختلف کاربران پاسخ دهند.</p>
-            `,
-            code: `name = input("نام خود را وارد کن: ")\nprint("سلام", name, "! خوش آمدی.")\nage = int(input("سن خود را وارد کن: "))\nprint("تو", age, "ساله هستی.")`,
-            output: `(با ورودی‌های: علی, 25)\nسلام علی ! خوش آمدی.\nتو 25 ساله هستی.`
-        }, {
-            id: 4,
-            title: "شرط if و else 🧠",
-            meta: "تصمیم‌گیری در برنامه",
-            content: `
-                <p>با <code>if</code> و <code>else</code> می‌توان بر اساس شرط، تصمیم گرفت. این ساختار به برنامه اجازه می‌دهد مسیرهای مختلفی را بر اساس شرایط طی کند. شرط‌ها در پایتون با استفاده از عملگرهای مقایسه‌ای و منطقی ساخته می‌شوند. عملگرهای مقایسه‌ای شامل <code>==</code> (برابر)، <code>!=</code> (نابرابر)، <code>></code> (بزرگتر)، <code><</code> (کوچکتر)، <code>>=</code> (بزرگتر یا مساوی)، <code><=</code> (کوچکتر یا مساوی) هستند. عملگرهای منطقی شامل <code>and</code> (و)، <code>or</code> (یا)، <code>not</code> (نقیض) هستند که برای ترکیب چند شرط استفاده می‌شوند.</p>
-                <p><strong>ساختار کامل:</strong></p>
-                <ul>
-                    <li><code>if شرط:</code> اگر شرط درست باشد، این بلوک اجرا می‌شود</li>
-                    <li><code>elif شرط:</code> (اختیاری) اگر شرط if نادرست بود، این شرط بررسی می‌شود</li>
-                    <li><code>else:</code> (اختیاری) اگر هیچ‌کدام از شرط‌ها درست نبود، این بلوک اجرا می‌شود</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-arrow-right"></i><div><strong>فاصله (indentation) بسیار مهم است!</strong> در پایتون، بلوک‌های کد با فاصله مشخص می‌شوند. معمولاً از ۴ فاصله یا یک Tab استفاده می‌شود. اگر فاصله را رعایت نکنید، برنامه با خطا مواجه می‌شود. به یاد داشته باشید که در پایتون، همه دستورات داخل یک بلوک باید به یک اندازه فاصله داشته باشند.</div></div>
-                <p>📌 <span class="highlight">نکته:</span> می‌توانید شرط‌های تو در تو (Nested Conditions) داشته باشید، یعنی داخل یک شرط، شرط دیگری قرار دهید. همچنین می‌توانید از عملگرهای منطقی برای ترکیب چند شرط استفاده کنید. به عنوان مثال، <code>if age >= 18 and has_license:</code> هر دو شرط باید درست باشند تا بلوک اجرا شود.</p>
-                <p>شرط‌ها در پایتون بسیار انعطاف‌پذیر هستند و می‌توانید از آنها برای کنترل جریان برنامه استفاده کنید. با استفاده از شرط‌ها، می‌توانید برنامه‌های هوشمندی بسازید که بر اساس شرایط مختلف، رفتار متفاوتی داشته باشند. به عنوان مثال، در یک برنامه فروشگاهی، می‌توانید بر اساس مبلغ خرید، تخفیف‌های مختلفی اعمال کنید.</p>
-            `,
-            code: `age = 20\nif age >= 18:\n    print("تو بالغ هستی.")\nelse:\n    print("تو نوجوان هستی.")\n\nscore = 16\nif score >= 17:\n    print("عالی! 🌟")\nelif score >= 14:\n    print("خوب 👌")\nelse:\n    print("متوسط 📚")`,
-            output: `تو بالغ هستی.\nخوب 👌`
-        }, {
-            id: 5,
-            title: "حلقه for 🔄",
-            meta: "تکرار با for و range",
-            content: `
-                <p><code>for</code> برای تکرار روی یک بازه یا لیست استفاده می‌شود. این حلقه یکی از پرکاربردترین ساختارها در برنامه‌نویسی است و برای انجام کارهای تکراری استفاده می‌شود. حلقه for در پایتون بسیار قدرتمند است و می‌تواند روی هر شیء قابل تکرار (iterable) مانند لیست‌ها، تاپل‌ها، رشته‌ها، دیکشنری‌ها و حتی فایل‌ها تکرار کند. این ویژگی پایتون را بسیار منعطف می‌کند و به شما اجازه می‌دهد به راحتی روی مجموعه‌های مختلف تکرار کنید.</p>
-                <p><code>range(start, stop, step)</code> یک دنباله از اعداد می‌سازد:</p>
-                <ul>
-                    <li><code>range(5)</code> → ۰ تا ۴ (stop شامل نمی‌شود)</li>
-                    <li><code>range(2, 7)</code> → ۲ تا ۶</li>
-                    <li><code>range(0, 10, 2)</code> → ۰،۲،۴،۶،۸ (step=2)</li>
-                    <li><code>range(10, 0, -1)</code> → ۱۰،۹،۸،...،۱ (معکوس)</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-cogs"></i><div>حلقه‌ها برای انجام کارهای تکراری بسیار مفید هستند. هر جا که نیاز به تکرار دارید، از حلقه استفاده کنید. برای مثال، پردازش لیست‌ها، محاسبات تکراری، تولید داده‌های سریالی، و خواندن فایل‌ها. همچنین می‌توانید از حلقه‌های تو در تو (Nested Loops) برای پردازش ماتریس‌ها و داده‌های چندبعدی استفاده کنید.</div></div>
-                <p>📌 <span class="highlight">نکته:</span> متغیر <code>i</code> در حلقه، یک متغیر محلی است و فقط داخل حلقه معنی دارد. می‌توانید از هر نام دیگری هم استفاده کنید. همچنین می‌توانید از تابع <code>enumerate()</code> برای دسترسی به ایندکس و مقدار همزمان استفاده کنید: <code>for i, value in enumerate(list):</code></p>
-                <p>حلقه for در پایتون بسیار کارآمد است و می‌تواند حجم زیادی از داده را به سرعت پردازش کند. با استفاده از حلقه for و توابع داخلی پایتون، می‌توانید کدهای بسیار کارآمد و خوانا بنویسید. به عنوان مثال، می‌توانید با یک خط کد، یک لیست را با استفاده از list comprehension ایجاد کنید: <code>[x**2 for x in range(10)]</code></p>
-            `,
-            code: `print("اعداد 0 تا 4:")\nfor i in range(5):\n    print(i, end=" ")\n\nprint("\\n\\nتکرار روی یک لیست:")\nfruits = ["سیب", "موز", "پرتقال"]\nfor fruit in fruits:\n    print(fruit, end=" ")`,
-            output: `اعداد 0 تا 4:\n0 1 2 3 4 \n\nتکرار روی یک لیست:\nسیب موز پرتقال `
-        }, {
-            id: 6,
-            title: "حلقه while 🔁",
-            meta: "تکرار تا زمانی که شرط برقرار است",
-            content: `
-                <p><code>while</code> تا زمانی که شرط درست باشد، اجرا می‌شود. این حلقه برای موقعیت‌هایی که تعداد تکرارها از قبل مشخص نیست، بسیار مناسب است. حلقه while معمولاً در شرایطی استفاده می‌شود که نیاز به تکرار تا زمانی که یک شرط خاص برقرار است، داریم. به عنوان مثال، منتظر ماندن برای ورودی کاربر، خواندن فایل تا انتها، یا اجرای یک فرآیند تا زمانی که یک شرط خاص رخ دهد.</p>
-                <p><strong>ساختار:</strong></p>
-                <ul>
-                    <li><code>while شرط:</code></li>
-                    <li style="padding-right:2rem;">کدهای داخل حلقه</li>
-                    <li style="padding-right:2rem;">به‌روزرسانی متغیر شرط (برای جلوگیری از حلقه بی‌نهایت)</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-exclamation-circle"></i><div><strong>هشدار!</strong> اگر شرط همیشه درست باشد، حلقه بی‌نهایت می‌شود و برنامه هرگز متوقف نمی‌شود. همیشه مطمئن شو که در داخل حلقه، شرط را به سمت False تغییر می‌دهی تا حلقه متوقف شود. برای جلوگیری از حلقه بی‌نهایت، می‌توانید از دستور <code>break</code> برای خروج از حلقه استفاده کنید.</div></div>
-                <p>📌 <span class="highlight">کاربرد:</span> حلقه while برای موقعیت‌هایی مثل منتظر ماندن برای ورودی کاربر، خواندن فایل تا انتها، و پردازش داده‌هایی که تعدادشان مشخص نیست استفاده می‌شود. همچنین در برنامه‌های سرور و سرویس‌های دائمی که باید همیشه در حال اجرا باشند، از حلقه while استفاده می‌شود.</p>
-                <p>حلقه while در پایتون بسیار انعطاف‌پذیر است و می‌توانید از آن برای پیاده‌سازی الگوریتم‌های پیچیده استفاده کنید. با استفاده از while، می‌توانید برنامه‌هایی بسازید که به صورت تعاملی با کاربر کار کنند، داده‌ها را پردازش کنند، یا حتی بازی‌های ساده بسازید. به عنوان مثال، می‌توانید یک بازی حدس عدد بسازید که تا زمانی که کاربر عدد را حدس نزند، ادامه پیدا کند.</p>
-            `,
-            code: `count = 0\nprint("شمارش از 0 تا 4:")\nwhile count < 5:\n    print(count, end=" ")\n    count += 1\n\nprint("\\n\\nاعداد 10 تا 1:")\nn = 10\nwhile n >= 1:\n    print(n, end=" ")\n    n -= 1`,
-            output: `شمارش از 0 تا 4:\n0 1 2 3 4 \n\nاعداد 10 تا 1:\n10 9 8 7 6 5 4 3 2 1 `
-        }, {
-            id: 7,
-            title: "لیست‌ها (List) 📋",
-            meta: "ذخیره و مدیریت چندین مقدار",
-            content: `
-                <p>لیست‌ها برای ذخیره چند مقدار در یک متغیر استفاده می‌شوند. لیست‌ها قابل تغییر (mutable) هستند و می‌توانید اعضای آن را اضافه، حذف یا تغییر دهید. لیست‌ها یکی از پرکاربردترین ساختارهای داده در پایتون هستند و در بسیاری از برنامه‌ها استفاده می‌شوند. شما می‌توانید لیست‌هایی از انواع داده‌های مختلف داشته باشید، حتی لیست‌های تو در تو (Nested Lists) که برای نمایش داده‌های چندبعدی مانند ماتریس‌ها استفاده می‌شوند.</p>
-                <p><strong>عملیات مهم روی لیست:</strong></p>
-                <ul>
-                    <li><code>len(list)</code> → تعداد اعضا</li>
-                    <li><code>list.append(x)</code> → اضافه کردن عضو به انتها</li>
-                    <li><code>list.insert(i, x)</code> → اضافه کردن عضو در موقعیت i</li>
-                    <li><code>list.remove(x)</code> → حذف اولین عضو برابر با x</li>
-                    <li><code>list.pop(i)</code> → حذف عضو در موقعیت i و برگرداندن آن</li>
-                    <li><code>list[index]</code> → دسترسی به عضو در موقعیت index</li>
-                    <li><code>list.sort()</code> → مرتب‌سازی لیست</li>
-                    <li><code>list.reverse()</code> → معکوس کردن لیست</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-info-circle"></i><div>شاخص‌ها (ایندکس) در لیست از ۰ شروع می‌شوند. همچنین می‌توانید از شاخص منفی استفاده کنید: <code>-1</code> آخرین عضو، <code>-2</code> یکی مانده به آخر و...</div></div>
-                <p>📌 <span class="highlight">نکته:</span> لیست‌ها می‌توانند شامل انواع داده‌های مختلف باشند. همچنین می‌توانید از Slicing (برش) برای دسترسی به بخشی از لیست استفاده کنید: <code>list[start:end:step]</code>. به عنوان مثال، <code>list[1:4]</code> اعضای ۱ تا ۳ را برمی‌گرداند.</p>
-                <p>لیست‌ها در پایتون بسیار قدرتمند هستند و امکانات زیادی برای کار با آنها وجود دارد. می‌توانید از توابع داخلی مانند <code>sum()</code>، <code>max()</code>، <code>min()</code>، <code>sorted()</code> روی لیست‌ها استفاده کنید. همچنین می‌توانید از List Comprehension برای ایجاد لیست‌های جدید به صورت فشرده و کارآمد استفاده کنید: <code>[x**2 for x in range(10)]</code></p>
-            `,
-            code: `fruits = ["سیب", "موز", "پرتقال"]\nprint("لیست اولیه:", fruits)\nfruits.append("انگور")\nprint("پس از append:", fruits)\nprint("اولین عضو:", fruits[0])`,
-            output: `لیست اولیه: ['سیب', 'موز', 'پرتقال']\nپس از append: ['سیب', 'موز', 'پرتقال', 'انگور']\nاولین عضو: سیب`
-        }, {
-            id: 8,
-            title: "دیکشنری (Dictionary) 📚",
-            meta: "ذخیره داده با کلید و مقدار",
-            content: `
-                <p>دیکشنری داده‌ها را با <strong>کلید</strong> و <strong>مقدار</strong> ذخیره می‌کند. این ساختار داده بسیار قدرتمند است و برای ذخیره اطلاعات مرتبط استفاده می‌شود. دیکشنری‌ها در پایتون بسیار کارآمد هستند و عملیات جستجو، افزودن و حذف در آنها با پیچیدگی زمانی O(1) انجام می‌شود. این ویژگی دیکشنری‌ها را برای ذخیره و بازیابی سریع داده‌ها بسیار مناسب می‌کند.</p>
-                <p><strong>ساختار:</strong> <code>{"key1": value1, "key2": value2}</code></p>
-                <ul>
-                    <li>دسترسی: <code>dict["key"]</code> یا <code>dict.get("key")</code></li>
-                    <li>اضافه کردن: <code>dict["new_key"] = value</code></li>
-                    <li>حذف: <code>del dict["key"]</code> یا <code>dict.pop("key")</code></li>
-                    <li>همه کلیدها: <code>dict.keys()</code></li>
-                    <li>همه مقادیر: <code>dict.values()</code></li>
-                    <li>همه جفت‌ها: <code>dict.items()</code></li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-database"></i><div>دیکشنری برای ذخیره اطلاعات مربوط به یک موضوع (مثل اطلاعات شخص، تنظیمات برنامه، داده‌های JSON و...) بسیار مفید است. کلیدها باید منحصر به فرد باشند و معمولاً از رشته استفاده می‌شود، اما می‌توانید از هر نوع داده غیرقابل تغییر (immutable) به عنوان کلید استفاده کنید.</div></div>
-                <p>📌 <span class="highlight">نکته:</span> در نسخه‌های جدید پایتون (از Python 3.7 به بعد)، دیکشنری ترتیب درج کلیدها را حفظ می‌کند. این ویژگی برای بسیاری از برنامه‌ها مفید است و به شما اجازه می‌دهد به ترتیب درج کلیدها اعتماد کنید.</p>
-                <p>دیکشنری‌ها در پایتون بسیار منعطف هستند و می‌توانید از آنها برای ساختاردهی داده‌های پیچیده استفاده کنید. می‌توانید دیکشنری‌های تو در تو داشته باشید که برای ذخیره داده‌های سلسله‌مراتبی مانند JSON بسیار مفید هستند. همچنین می‌توانید از دیکشنری‌ها برای کش کردن نتایج محاسبات، ذخیره تنظیمات برنامه، و بسیاری موارد دیگر استفاده کنید.</p>
-            `,
-            code: `person = {\n    "name": "سارا",\n    "age": 25,\n    "city": "تهران"\n}\nprint("نام:", person["name"])\nprint("سن:", person["age"])\nperson["job"] = "برنامه‌نویس"\nprint("شغل:", person["job"])`,
-            output: `نام: سارا\nسن: 25\nشغل: برنامه‌نویس`
-        }, {
-            id: 9,
-            title: "توابع (Function) ⚙️",
-            meta: "ساخت بلوک‌های قابل استفاده مجدد",
-            content: `
-                <p>توابع با <code>def</code> تعریف می‌شوند و کد را <strong>سازماندهی</strong> و <strong>قابل استفاده مجدد</strong> می‌کنند. توابع یکی از مهم‌ترین مفاهیم در برنامه‌نویسی هستند و به شما اجازه می‌دهند کد خود را به بخش‌های کوچک‌تر و قابل مدیریت تقسیم کنید. با استفاده از توابع، می‌توانید از تکرار کد جلوگیری کنید و برنامه‌های خود را تمیزتر و خوانا‌تر بنویسید.</p>
-                <p><strong>ساختار:</strong></p>
-                <ul>
-                    <li><code>def name(param1, param2, ...):</code></li>
-                    <li style="padding-right:2rem;">کدهای تابع</li>
-                    <li style="padding-right:2rem;"><code>return value</code> (اختیاری - اگر نباشد، None برمی‌گرداند)</li>
-                </ul>
-                <p><strong>انواع پارامترها:</strong></p>
-                <ul>
-                    <li>پارامترهای اجباری: <code>def func(a, b)</code></li>
-                    <li>پارامترهای پیش‌فرض: <code>def func(a, b=10)</code></li>
-                    <li>پارامترهای کلیدواژه‌ای: <code>def func(*args, **kwargs)</code></li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-cog"></i><div>توابع باعث می‌شوند کد تمیزتر، قابل فهم‌تر و قابل تست‌تر شود. هر تابع باید یک کار مشخص انجام دهد (Single Responsibility Principle). این اصل به شما کمک می‌کند تا کد خود را بهتر سازماندهی کنید و اشکال‌زدایی را آسان‌تر کنید.</div></div>
-                <p>📌 <span class="highlight">نکته:</span> توابع می‌توانند توابع دیگر را صدا بزنند و حتی توابع را به عنوان آرگومان به توابع دیگر پاس دهند (توابع درجه بالا). این ویژگی پایتون را برای برنامه‌نویسی تابعی (Functional Programming) مناسب می‌کند. همچنین می‌توانید از Decoratorها برای تغییر رفتار توابع استفاده کنید.</p>
-                <p>توابع در پایتون بسیار قدرتمند هستند و امکانات زیادی برای کار با آنها وجود دارد. می‌توانید از توابع برای ایجاد کتابخانه‌های قابل استفاده مجدد، ساخت APIهای ساده، و سازماندهی کدهای پیچیده استفاده کنید. همچنین می‌توانید از توابع برای پیاده‌سازی الگوریتم‌های مختلف و حل مسائل پیچیده استفاده کنید.</p>
-            `,
-            code: `def say_hello(name):\n    print("سلام", name, "! چطوری؟")\n\ndef add(a, b):\n    return a + b\n\nsay_hello("علی")\nresult = add(5, 3)\nprint("جمع 5 و 3 =", result)`,
-            output: `سلام علی ! چطوری؟\nجمع 5 و 3 = 8`
-        }, {
-            id: 10,
-            title: "مدیریت خطا (try/except) 🛡️",
-            meta: "گرفتن و مدیریت خطاها",
-            content: `
-                <p>با <code>try/except</code> می‌توان خطاها را <strong>گرفت</strong> و <strong>مدیریت</strong> کرد. این کار باعث می‌شود برنامه شما مقاوم‌تر باشد و در صورت بروز خطا، به جای Crash کردن، پیام مناسب نشان دهد. مدیریت خطا یکی از مهارت‌های ضروری در برنامه‌نویسی است که به شما اجازه می‌دهد برنامه‌های حرفه‌ای و قابل اعتماد بسازید.</p>
-                <p><strong>ساختار کامل:</strong></p>
-                <ul>
-                    <li><code>try:</code> کدی که ممکن است خطا دهد</li>
-                    <li><code>except ExceptionType:</code> کدی که در صورت خطا اجرا می‌شود</li>
-                    <li><code>else:</code> (اختیاری) اگر خطا نبود، اجرا می‌شود</li>
-                    <li><code>finally:</code> (اختیاری) همیشه اجرا می‌شود (چه خطا بیاید چه نیاید)</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-shield-alt"></i><div><strong>انواع خطاها:</strong> <code>ZeroDivisionError</code> (تقسیم بر صفر)، <code>ValueError</code> (تبدیل نامعتبر)، <code>TypeError</code> (نوع نامناسب)، <code>FileNotFoundError</code> (فایل پیدا نشد) و... هر کدام از این خطاها شرایط خاص خود را دارند و باید به صورت مناسب مدیریت شوند.</div></div>
-                <p>📌 <span class="highlight">نکته مهم:</span> همیشه خطاهای خاص را بگیرید و از except بدون نوع (که همه خطاها را می‌گیرد) با احتیاط استفاده کنید، چون ممکن است خطاهای مهم را پنهان کند. بهتر است خطاها را لاگ کنید تا بتوانید بعداً آنها را بررسی کنید.</p>
-                <p>مدیریت خطا در پایتون بسیار قدرتمند است و به شما اجازه می‌دهد برنامه‌های مقاوم و قابل اعتماد بسازید. با استفاده از try/except، می‌توانید خطاهای پیش‌بینی نشده را مدیریت کنید و به کاربر پیام‌های مفید نشان دهید. همچنین می‌توانید از <code>raise</code> برای ایجاد خطاهای سفارشی استفاده کنید و کنترل بیشتری روی جریان برنامه داشته باشید.</p>
-            `,
-            code: `try:\n    num1 = float(input("عدد اول: "))\n    num2 = float(input("عدد دوم: "))\n    result = num1 / num2\n    print(f"{num1} ÷ {num2} = {result}")\nexcept ZeroDivisionError:\n    print("❌ تقسیم بر صفر ممکن نیست!")\nexcept ValueError:\n    print("❌ لطفاً عدد وارد کن!")`,
-            output: `(با ورودی 10 و 2)\n10.0 ÷ 2.0 = 5.0`
-        }, {
-            id: 11,
-            title: "فایل‌ها (File I/O) 📁",
-            meta: "خواندن و نوشتن در فایل",
-            content: `
-                <p>با <code>open()</code> می‌توان فایل‌ها را خواند یا نوشت. کار با فایل‌ها یکی از مهارت‌های ضروری در برنامه‌نویسی است و در بسیاری از برنامه‌ها استفاده می‌شود. شما می‌توانید داده‌ها را در فایل‌ها ذخیره کنید و بعداً آنها را بازیابی کنید. این کار برای ذخیره‌سازی اطلاعات کاربر، تنظیمات برنامه، لاگ‌ها، و بسیاری موارد دیگر استفاده می‌شود.</p>
-                <p><strong>حالت‌های باز کردن فایل:</strong></p>
-                <ul>
-                    <li><code>"r"</code> : خواندن (پیش‌فرض) - فایل باید وجود داشته باشد</li>
-                    <li><code>"w"</code> : نوشتن (محتوای قبلی پاک می‌شود) - اگر فایل نباشد، ساخته می‌شود</li>
-                    <li><code>"a"</code> : افزودن به انتهای فایل - اگر فایل نباشد، ساخته می‌شود</li>
-                    <li><code>"r+"</code> : خواندن و نوشتن - فایل باید وجود داشته باشد</li>
-                    <li><code>"x"</code> : ایجاد فایل جدید - اگر فایل وجود داشته باشد، خطا می‌دهد</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-file"></i><div><strong>استفاده از <code>with</code></strong> فایل را خودکار می‌بندد و از خطا جلوگیری می‌کند. همیشه از with استفاده کنید تا مطمئن باشید فایل به درستی بسته می‌شود. این کار از نشت حافظه و مشکلات دیگر جلوگیری می‌کند.</div></div>
-                <p>📌 <span class="highlight">نکته:</span> مسیر فایل می‌تواند نسبی (نسبت به محل اجرای برنامه) یا مطلق باشد. در ویندوز از <code>\\</code> و در لینوکس/مک از <code>/</code> استفاده کنید. همچنین می‌توانید از ماژول <code>os.path</code> برای کار با مسیرها به صورت سیستمی استفاده کنید.</p>
-                <p>کار با فایل‌ها در پایتون بسیار ساده است و امکانات زیادی برای خواندن و نوشتن داده‌ها وجود دارد. می‌توانید فایل‌های متنی، فایل‌های CSV، فایل‌های JSON، و حتی فایل‌های باینری را بخوانید و بنویسید. همچنین می‌توانید از کتابخانه‌های مختلف برای کار با فرمت‌های خاص استفاده کنید.</p>
-            `,
-            code: `with open("sample.txt", "w") as f:\n    f.write("سلام! این یک فایل نمونه است.\\n")\nprint("✅ فایل نوشته شد.")\n\nwith open("sample.txt", "r") as f:\n    content = f.read()\n    print(content)`,
-            output: `✅ فایل نوشته شد.\n\nسلام! این یک فایل نمونه است.\n`
-        }, {
-            id: 12,
-            title: "کلاس‌ها و شی‌گرایی 🏗️",
-            meta: "مقدمه بر برنامه‌نویسی شی‌گرا (OOP)",
-            content: `
-                <p>با <code>class</code> می‌توان اشیاء (Object) تعریف کرد. برنامه‌نویسی شی‌گرا (OOP) یک پارادایم قدرتمند برای سازماندهی کد است که به شما اجازه می‌دهد مفاهیم دنیای واقعی را در کد خود شبیه‌سازی کنید. OOP به شما کمک می‌کند کد خود را به صورت ماژولار و قابل استفاده مجدد بنویسید و مدیریت کدهای بزرگ را آسان‌تر می‌کند.</p>
-                <p><strong>مفاهیم اصلی OOP:</strong></p>
-                <ul>
-                    <li><strong>کلاس (Class):</strong> قالبی برای ساخت اشیاء (مثل یک نقشه)</li>
-                    <li><strong>شیء (Object):</strong> نمونه‌ای از کلاس (مثل یک خانه ساخته شده از نقشه)</li>
-                    <li><code>__init__</code> : متد سازنده (مقداردهی اولیه) - هنگام ساخت شیء اجرا می‌شود</li>
-                    <li><code>self</code> : اشاره به خود شیء - برای دسترسی به ویژگی‌ها و متدهای شیء</li>
-                    <li><strong>وراثت (Inheritance):</strong> کلاس‌ها می‌توانند از کلاس‌های دیگر ارث‌بری کنند</li>
-                    <li><strong>کپسوله‌سازی (Encapsulation):</strong> پنهان کردن جزئیات داخلی</li>
-                    <li><strong>چندریختی (Polymorphism):</strong> رفتارهای مختلف برای یک متد</li>
-                </ul>
-                <div class="tip-box"><i class="fas fa-cubes"></i><div>شی‌گرایی به سازماندهی بهتر کد کمک می‌کند و مفاهیم دنیای واقعی را شبیه‌سازی می‌کند. با OOP می‌توانید کدهای پیچیده را به اجزای کوچکتر و قابل مدیریت تقسیم کنید. این کار باعث می‌شود کد شما قابل فهم‌تر، تست‌پذیرتر و قابل نگهداری‌تر باشد.</div></div>
-                <p>📌 <span class="highlight">نکته:</span> در پایتون، همه چیز یک شیء است! حتی اعداد و رشته‌ها هم شیء هستند و متدهای خاص خود را دارند. این ویژگی پایتون را بسیار قدرتمند و منعطف می‌کند و به شما اجازه می‌دهد از متدهای مختلف روی داده‌ها استفاده کنید.</p>
-                <p>برنامه‌نویسی شی‌گرا در پایتون بسیار قدرتمند است و امکانات زیادی برای سازماندهی کد وجود دارد. می‌توانید از کلاس‌های انتزاعی (Abstract Classes) برای تعریف قراردادها استفاده کنید. همچنین می‌توانید از چندریختی (Polymorphism) برای نوشتن کدهای انعطاف‌پذیر استفاده کنید. با استفاده از OOP، می‌توانید برنامه‌های بزرگ و پیچیده را به صورت ساختاریافته و سازماندهی شده بنویسید.</p>
-            `,
-            code: `class Car:\n    def __init__(self, name, color):\n        self.name = name\n        self.color = color\n    \n    def start(self):\n        print(f"{self.name} روشن شد! 🚗")\n    \n    def info(self):\n        return f"{self.name} ({self.color})"\n\ncar1 = Car("پرشیا", "سفید")\ncar1.start()\nprint(car1.info())`,
-            output: `پرشیا روشن شد! 🚗\nپرشیا (سفید)`
-        }];
+<!-- محتوای اصلی -->
+<main class="main-content">
+    <div class="lesson-panel">
+        <h2 id="lessonTitle"><i class="fas fa-book"></i> درس ۱</h2>
+        <div class="lesson-meta" id="lessonMeta">مفاهیم پایه</div>
+        <div class="lesson-content" id="lessonContent"></div>
+        <div class="nav-buttons">
+            <button onclick="prevLesson()" id="prevBtn"><i class="fas fa-chevron-right"></i> درس قبلی</button>
+            <button onclick="nextLesson()" id="nextBtn">درس بعدی <i class="fas fa-chevron-left"></i></button>
+        </div>
+    </div>
+    <footer class="footer">تمامی حقوق برای تیم‌های سامنوویکس و گام اول محفوظ است</footer>
+</main>
 
-        // -------- متغیرهای DOM --------
-        const lessonListEl = document.getElementById('lessonList');
-        const lessonTitle = document.getElementById('lessonTitle');
-        const lessonMeta = document.getElementById('lessonMeta');
-        const lessonContent = document.getElementById('lessonContent');
-        const codeDisplay = document.getElementById('codeDisplay');
-        const outputContentText = document.getElementById('outputContentText');
-        const outputDisplay = document.getElementById('outputDisplay');
+<script>
+// ============================================================
+// ۱۰۰ درس کامل - ۱۰ فصل
+// ============================================================
 
-        let currentLessonId = 1;
+const lessonsData = [];
 
-        // -------- ساخت لیست درس‌ها --------
-        function renderLessonList() {
-            lessonListEl.innerHTML = '';
-            lessons.forEach(lesson => {
-                const btn = document.createElement('button');
-                btn.className = 'lesson-item' + (lesson.id === currentLessonId ? ' active' : '');
-                btn.dataset.id = lesson.id;
-                btn.innerHTML = `
-                    <i class="fas fa-${lesson.id <= 4 ? 'code' : lesson.id <= 8 ? 'list-ul' : 'layer-group'}"></i>
-                    درس ${lesson.id} · ${lesson.title}
-                    <span class="num">${lesson.id}</span>
-                `;
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    loadLesson(lesson.id);
-                });
-                lessonListEl.appendChild(btn);
-            });
-        }
+// ===== فصل ۱: مبانی پایتون (درس ۱-۱۰) - کامل و جامع =====
+const ch1 = [
+    {t:"سلام دنیا! 🚀", m:"چاپ، کامنت و ترمینال - شروع کار با پایتون",
+     c:`# اولین برنامه پایتون\nprint("سلام دنیا!")\nprint("به دوره پایتون خوش آمدی!")\nprint("پایتون", "زبان", "برنامه‌نویسی", "عالی", "است")`,
+     o:"سلام دنیا!\nبه دوره پایتون خوش آمدی!\nپایتون زبان برنامه‌نویسی عالی است"},
+    {t:"متغیرها و انواع داده 📦", m:"عدد، رشته، بولین، لیست، دیکشنری - انواع داده اصلی",
+     c:`name = "علی"\nage = 22\nheight = 1.78\nis_student = True\nprint("نام:", name, "نوع:", type(name))\nprint("سن:", age, "نوع:", type(age))\nprint("قد:", height, "نوع:", type(height))\nprint("دانشجو:", is_student, "نوع:", type(is_student))`,
+     o:"نام: علی نوع: <class 'str'>\nسن: 22 نوع: <class 'int'>\nقد: 1.78 نوع: <class 'float'>\nدانشجو: True نوع: <class 'bool'>"},
+    {t:"ورودی گرفتن از کاربر ⌨️", m:"input() و تبدیل نوع - تعامل با کاربر",
+     c:`name = input("نام خود را وارد کن: ")\nprint("سلام", name, "! خوش آمدی.")\nage = int(input("سن خود را وارد کن: "))\nprint("تو", age, "ساله هستی.")`,
+     o:"(با ورودی: علی, 25)\nسلام علی ! خوش آمدی.\nتو 25 ساله هستی."},
+    {t:"شرط if و else 🧠", m:"تصمیم‌گیری با if, elif, else - ساختارهای شرطی",
+     c:`age = 20\nif age >= 18:\n    print("تو بالغ هستی.")\nelse:\n    print("تو نوجوان هستی.")\n\nscore = 16\nif score >= 17:\n    print("عالی! 🌟")\nelif score >= 14:\n    print("خوب 👌")\nelse:\n    print("متوسط 📚")`,
+     o:"تو بالغ هستی.\nخوب 👌"},
+    {t:"حلقه for 🔄", m:"تکرار با for و range - حلقه‌های پایتون",
+     c:`print("اعداد 0 تا 4:")\nfor i in range(5):\n    print(i, end=" ")\n\nprint("\\n\\nتکرار روی یک لیست:")\nfruits = ["سیب", "موز", "پرتقال"]\nfor fruit in fruits:\n    print(fruit, end=" ")`,
+     o:"اعداد 0 تا 4:\n0 1 2 3 4 \n\nتکرار روی یک لیست:\nسیب موز پرتقال "},
+    {t:"حلقه while 🔁", m:"تکرار شرطی با while - حلقه‌های نامحدود",
+     c:`count = 0\nprint("شمارش از 0 تا 4:")\nwhile count < 5:\n    print(count, end=" ")\n    count += 1\n\nprint("\\n\\nاعداد 10 تا 1:")\nn = 10\nwhile n >= 1:\n    print(n, end=" ")\n    n -= 1`,
+     o:"شمارش از 0 تا 4:\n0 1 2 3 4 \n\nاعداد 10 تا 1:\n10 9 8 7 6 5 4 3 2 1 "},
+    {t:"لیست‌ها 📋", m:"لیست و عملیات روی آن - مدیریت چندین مقدار",
+     c:`fruits = ["سیب", "موز", "پرتقال"]\nprint("لیست اولیه:", fruits)\nfruits.append("انگور")\nprint("پس از append:", fruits)\nprint("اولین عضو:", fruits[0])\nprint("آخرین عضو:", fruits[-1])\nprint("برش 1 تا 3:", fruits[1:3])`,
+     o:"لیست اولیه: ['سیب', 'موز', 'پرتقال']\nپس از append: ['سیب', 'موز', 'پرتقال', 'انگور']\nاولین عضو: سیب\nآخرین عضو: انگور\nبرش 1 تا 3: ['موز', 'پرتقال']"},
+    {t:"دیکشنری 📚", m:"دیکشنری و عملیات - داده با کلید و مقدار",
+     c:`person = {\n    "name": "سارا",\n    "age": 25,\n    "city": "تهران"\n}\nprint("نام:", person["name"])\nprint("سن:", person["age"])\nperson["job"] = "برنامه‌نویس"\nprint("شغل:", person["job"])\nprint("همه کلیدها:", list(person.keys()))`,
+     o:"نام: سارا\nسن: 25\nشغل: برنامه‌نویس\nهمه کلیدها: ['name', 'age', 'city', 'job']"},
+    {t:"توابع و Type Hints ⚙️", m:"تعریف تابع با Type Hints - کد ماژولار",
+     c:`from typing import List, Optional, Union\n\ndef greet(name: str) -> str:\n    return f"سلام {name}!"\n\ndef add(a: int, b: int) -> int:\n    return a + b\n\ndef process(items: List[Union[int, str]]) -> List[str]:\n    return [str(item) for item in items]\n\nprint(greet("علی"))\nprint(add(5, 3))\nprint(process([1, "دو", 3, "چهار"]))`,
+     o:"سلام علی!\n8\n['1', 'دو', '3', 'چهار']"},
+    {t:"مدیریت خطا 🛡️", m:"try/except - مدیریت خطاها و برنامه مقاوم",
+     c:`try:\n    num1 = float(input("عدد اول: "))\n    num2 = float(input("عدد دوم: "))\n    result = num1 / num2\n    print(f"{num1} ÷ {num2} = {result}")\nexcept ZeroDivisionError:\n    print("❌ تقسیم بر صفر ممکن نیست!")\nexcept ValueError:\n    print("❌ لطفاً عدد وارد کن!")\nexcept Exception as e:\n    print(f"خطا: {e}")`,
+     o:"(با ورودی 10 و 2)\n10.0 ÷ 2.0 = 5.0"}
+];
 
-        // -------- بارگذاری یک درس --------
-        function loadLesson(id) {
+// ===== فصل ۲: ساختارهای داده پیشرفته (درس ۱۱-۲۰) =====
+const ch2 = [
+    {t:"تاپل 📌", m:"تاپل - داده غیرقابل تغییر", c:`t = (1, 2, 3)\nprint("طول:", len(t))\nprint("عضو اول:", t[0])\nprint("تعداد 2:", t.count(2))`, o:"طول: 3\nعضو اول: 1\nتعداد 2: 1"},
+    {t:"مجموعه 🧩", m:"Set - داده بدون تکراری", c:`s = {1, 2, 2, 3}\nprint(s)\ns.add(4)\nprint(s)\ns.discard(2)\nprint(s)`, o:"{1, 2, 3}\n{1, 2, 3, 4}\n{1, 3, 4}"},
+    {t:"فایل‌ها 📁", m:"خواندن و نوشتن فایل - File I/O", c:`with open("test.txt", "w", encoding="utf-8") as f:\n    f.write("سلام دنیا!")\nwith open("test.txt", "r", encoding="utf-8") as f:\n    print(f.read())`, o:"سلام دنیا!"},
+    {t:"کلاس‌ها 🏗️", m:"شی‌گرایی - کلاس و شیء", c:`class Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    def greet(self):\n        return f"سلام، من {self.name} هستم."\np = Person("علی", 25)\nprint(p.greet())`, o:"سلام، من علی هستم."},
+    {t:"وراثت 🌳", m:"ارث‌بری - Inheritance", c:`class Animal:\n    def speak(self): return "صدا"\nclass Dog(Animal):\n    def speak(self): return "هاپ هاپ"\nd = Dog()\nprint(d.speak())`, o:"هاپ هاپ"},
+    {t:"متدهای ویژه 🔮", m:"__str__, __len__, __add__", c:`class Book:\n    def __init__(self, title, pages):\n        self.title = title\n        self.pages = pages\n    def __str__(self):\n        return f"کتاب: {self.title} ({self.pages} صفحه)"\n    def __len__(self):\n        return self.pages\nb = Book("پایتون", 300)\nprint(b)\nprint(len(b))`, o:"کتاب: پایتون (300 صفحه)\n300"},
+    {t:"دکوریتورها 🎨", m:"تغییر رفتار توابع با دکوریتور", c:`def timer(func):\n    import time\n    def wrapper(*args, **kwargs):\n        start = time.time()\n        result = func(*args, **kwargs)\n        print(f"زمان: {time.time()-start:.4f}s")\n        return result\n    return wrapper\n@timer\ndef slow():\n    import time\n    time.sleep(0.5)\nslow()`, o:"زمان: 0.5002s"},
+    {t:"ژنراتورها ⚡", m:"yield - تولید پویا و بهینه", c:`def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\nfor x in fib(10):\n    print(x, end=" ")`, o:"0 1 1 2 3 5 8 13 21 34 "},
+    {t:"ایتراتورها 🔄", m:"__iter__ و __next__ - تکرار سفارشی", c:`class Counter:\n    def __init__(self, start, end):\n        self.current = start\n        self.end = end\n    def __iter__(self):\n        return self\n    def __next__(self):\n        if self.current > self.end:\n            raise StopIteration\n        val = self.current\n        self.current += 1\n        return val\nfor n in Counter(1, 5):\n    print(n, end=" ")`, o:"1 2 3 4 5 "},
+    {t:"مدیریت context 🎯", m:"with - مدیریت منابع", c:`class FileManager:\n    def __init__(self, name, mode):\n        self.name = name\n        self.mode = mode\n    def __enter__(self):\n        self.file = open(self.name, self.mode)\n        return self.file\n    def __exit__(self, *args):\n        self.file.close()\nwith FileManager("test.txt", "w") as f:\n    f.write("Hello")\nprint("Done")`, o:"Done"}
+];
+
+// ===== فصل ۳: کتابخانه استاندارد (درس ۲۱-۳۰) =====
+const ch3 = [
+    {t:"ماژول os 🖥️", m:"سیستم عامل - فایل‌ها و مسیرها", c:`import os\nprint("مسیر:", os.getcwd())\nprint("فایل‌ها:", os.listdir(".")[:3])`, o:"مسیر: /home/user\nفایل‌ها: ['file1', 'file2', 'file3']"},
+    {t:"ماژول sys ⚙️", m:"سیستم و مفسر - آرگومان‌ها", c:`import sys\nprint("نسخه:", sys.version[:10])\nprint("پلتفرم:", sys.platform)`, o:"نسخه: 3.12.0\nپلتفرم: linux"},
+    {t:"datetime 📅", m:"تاریخ و زمان - کار با زمان", c:`from datetime import datetime, timedelta\nnow = datetime.now()\nprint(now.strftime("%Y-%m-%d %H:%M"))\nfuture = now + timedelta(days=7)\nprint(future.strftime("%Y-%m-%d"))`, o:"2024-01-15 14:30\n2024-01-22"},
+    {t:"math 📐", m:"توابع ریاضی - محاسبات پیشرفته", c:`import math\nprint("پی:", math.pi)\nprint("sqrt(16):", math.sqrt(16))\nprint("factorial(5):", math.factorial(5))`, o:"پی: 3.141592653589793\nsqrt(16): 4.0\nfactorial(5): 120"},
+    {t:"random 🎲", m:"اعداد تصادفی - تولید و انتخاب", c:`import random\nprint("randint(1,10):", random.randint(1,10))\nprint("choice:", random.choice(["a","b","c"]))\nprint("sample:", random.sample(range(10), 3))`, o:"randint(1,10): 7\nchoice: b\nsample: [2, 5, 8]"},
+    {t:"json 📦", m:"JSON - ذخیره و انتقال داده", c:`import json\ndata = {"name": "علی", "age": 25, "city": "تهران"}\njson_str = json.dumps(data, ensure_ascii=False, indent=2)\nprint(json_str)\nparsed = json.loads(json_str)\nprint(parsed["name"])`, o:'{\n  "name": "علی",\n  "age": 25,\n  "city": "تهران"\n}\nعلی'},
+    {t:"re 🔍", m:"عبارات با قاعده - جستجوی پیشرفته", c:`import re\ntext = "email: test@example.com, phone: 0912-123-4567"\nemail = re.search(r"\\S+@\\S+", text)\nphone = re.search(r"\\d{4}-\\d{3}-\\d{4}", text)\nprint("ایمیل:", email.group() if email else "یافت نشد")\nprint("تلفن:", phone.group() if phone else "یافت نشد")`, o:"ایمیل: test@example.com\nتلفن: 0912-123-4567"},
+    {t:"collections 🧰", m:"ساختارهای داده پیشرفته", c:`from collections import Counter, defaultdict, deque\nprint("Counter:", Counter("hello world"))\nd = defaultdict(int)\nd["a"] += 1\nprint("defaultdict:", d["a"], d["b"])\nq = deque([1,2,3])\nq.appendleft(0)\nprint("deque:", list(q))`, o:"Counter: Counter({'l': 3, 'o': 2, 'h': 1, 'e': 1, ' ': 1, 'w': 1, 'r': 1, 'd': 1})\ndefaultdict: 1 0\ndeque: [0, 1, 2, 3]"},
+    {t:"itertools 🔗", m:"ابزارهای تکرار - ترکیب و جایگشت", c:`from itertools import chain, product, permutations\nprint("chain:", list(chain([1,2], [3,4])))\nprint("product:", list(product("AB", repeat=2)))\nprint("permutations:", list(permutations([1,2,3], 2)))`, o:"chain: [1, 2, 3, 4]\nproduct: [('A', 'A'), ('A', 'B'), ('B', 'A'), ('B', 'B')]\npermutations: [(1, 2), (1, 3), (2, 1), (2, 3), (3, 1), (3, 2)]"},
+    {t:"functools 🧩", m:"توابع پیشرفته - cache, partial, reduce", c:`from functools import lru_cache, partial, reduce\n@lru_cache\ndef fib(n):\n    return n if n < 2 else fib(n-1) + fib(n-2)\nprint("fib(10):", fib(10))\nadd5 = partial(lambda x,y: x+y, 5)\nprint("partial(5+3):", add5(3))\nprint("reduce:", reduce(lambda x,y: x*y, [1,2,3,4]))`, o:"fib(10): 55\npartial(5+3): 8\nreduce: 24"}
+];
+
+// ===== فصل ۴: کتابخانه‌های علمی (درس ۳۱-۴۰) =====
+const ch4 = [
+    {t:"NumPy 🔢", m:"آرایه‌های چندبعدی - محاسبات عددی", c:`import numpy as np\narr = np.array([1, 2, 3, 4, 5])\nprint("آرایه:", arr)\nprint("*2:", arr * 2)\nprint("میانگین:", np.mean(arr))\nprint("مجموع:", np.sum(arr))`, o:"آرایه: [1 2 3 4 5]\n*2: [ 2  4  6  8 10]\nمیانگین: 3.0\nمجموع: 15"},
+    {t:"Pandas 📊", m:"تحلیل داده - DataFrame و Series", c:`import pandas as pd\ndata = {"name": ["علی", "سارا", "رضا"], "age": [25, 30, 22]}\ndf = pd.DataFrame(data)\nprint(df)\nprint("\\nآمار سن:")\nprint(df["age"].describe())`, o:"   name  age\n0   علی   25\n1  سارا   30\n2   رضا   22\n\nآمار سن:\ncount    3.000000\nmean    25.666667\nstd      4.041452\nmin     22.000000\n25%     23.500000\n50%     25.000000\n75%     27.500000\nmax     30.000000\nName: age, dtype: float64"},
+    {t:"Matplotlib 📈", m:"تصویرسازی داده - نمودارها", c:`import matplotlib.pyplot as plt\nimport numpy as np\nx = np.linspace(0, 10, 100)\ny = np.sin(x)\nplt.figure(figsize=(8,4))\nplt.plot(x, y, label="sin(x)", color="blue")\nplt.title("نمودار سینوس")\nplt.xlabel("x")\nplt.ylabel("y")\nplt.legend()\nplt.grid(True, alpha=0.3)\nplt.show()`, o:"(نمودار سینوس نمایش داده می‌شود)"},
+    {t:"Seaborn 🎨", m:"تصویرسازی آماری - نمودارهای زیبا", c:`import seaborn as sns\nimport matplotlib.pyplot as plt\nimport numpy as np\ndata = np.random.normal(0, 1, 1000)\nsns.histplot(data, bins=30, kde=True)\nplt.title("توزیع نرمال")\nplt.show()`, o:"(هیستوگرام با منحنی KDE نمایش داده می‌شود)"},
+    {t:"SciPy 🧪", m:"محاسبات علمی - الگوریتم‌های پیشرفته", c:`from scipy import stats, optimize\nimport numpy as np\n# توزیع نرمال\nprint("PDF(0):", stats.norm.pdf(0))\nprint("CDF(0):", stats.norm.cdf(0))\n# بهینه‌سازی\nf = lambda x: x**2 + 2*x + 1\nresult = optimize.minimize(f, 0)\nprint("min f(x):", result.x[0])`, o:"PDF(0): 0.3989422804014327\nCDF(0): 0.5\nmin f(x): -1.0"},
+    {t:"scikit-learn 🤖", m:"یادگیری ماشین - الگوریتم‌ها", c:`from sklearn.linear_model import LinearRegression\nfrom sklearn.datasets import make_regression\nX, y = make_regression(n_samples=100, n_features=1, noise=10)\nmodel = LinearRegression()\nmodel.fit(X, y)\nprint("ضرایب:", model.coef_[0])\nprint("اعتبار:", model.score(X, y))`, o:"ضرایب: 42.5\nاعتبار: 0.95"},
+    {t:"TensorFlow 🧠", m:"یادگیری عمیق - Google", c:`import tensorflow as tf\nprint("نسخه:", tf.__version__)\n# یک مدل ساده\nmodel = tf.keras.Sequential([\n    tf.keras.layers.Dense(10, activation="relu"),\n    tf.keras.layers.Dense(1)\n])\nmodel.compile(optimizer="adam", loss="mse")\nprint("مدل ساخته شد")`, o:"نسخه: 2.13.0\nمدل ساخته شد"},
+    {t:"PyTorch 🔥", m:"یادگیری عمیق - Meta", c:`import torch\nimport torch.nn as nn\nprint("نسخه:", torch.__version__)\n# یک شبکه ساده\nclass Net(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.fc = nn.Linear(10, 1)\n    def forward(self, x):\n        return self.fc(x)\nmodel = Net()\nprint("مدل:", model)`, o:"نسخه: 2.0.0\nمدل: Net((fc): Linear(in_features=10, out_features=1, bias=True))"},
+    {t:"OpenCV 👁️", m:"بینایی کامپیوتر - پردازش تصویر", c:`import cv2\nprint("نسخه:", cv2.__version__)\n# ایجاد یک تصویر ساده\nimg = cv2.imread("test.jpg", cv2.IMREAD_GRAYSCALE)\nif img is not None:\n    print("ابعاد:", img.shape)\n    print("نوع:", img.dtype)\nelse:\n    print("تصویر یافت نشد، یک تصویر مصنوعی ساخته می‌شود")\n    img = cv2.rectangle(np.zeros((200,200), dtype=np.uint8), (50,50), (150,150), 255, -1)\n    cv2.imwrite("output.jpg", img)\n    print("تصویر ساخته شد")`, o:"نسخه: 4.8.0\nتصویر ساخته شد"},
+    {t:"Pillow 🖼️", m:"پردازش تصویر - Python Imaging Library", c:`from PIL import Image, ImageFilter\nprint("نسخه:", Image.__version__)\n# ایجاد تصویر\nimg = Image.new("RGB", (200, 200), color="blue")\nimg.save("blue.jpg")\nblurred = img.filter(ImageFilter.BLUR)\nblurred.save("blurred.jpg")\nprint("تصاویر ساخته شدند")`, o:"نسخه: 9.5.0\nتصاویر ساخته شدند"}
+];
+
+// ===== فصل ۵: توسعه وب (درس ۴۱-۵۰) =====
+const ch5 = [
+    {t:"Django 🌐", m:"فریمورک کامل وب - MTV, ORM, Admin", c:`# نصب: pip install django\n# شروع پروژه: django-admin startproject myproject\n# ساخت اپ: python manage.py startapp myapp\n# مدل\nfrom django.db import models\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    content = models.TextField()\n    created_at = models.DateTimeField(auto_now_add=True)\n    def __str__(self):\n        return self.title`, o:"(مدل مقاله در جنگو - کد نمونه)"},
+    {t:"Flask 🧪", m:"میکروفریمورک - سبک و انعطاف‌پذیر", c:`from flask import Flask, render_template\napp = Flask(__name__)\n@app.route("/")\ndef home():\n    return "<h1>سلام به فلاسک!</h1>"\n@app.route("/user/<name>")\ndef user(name):\n    return f"<h1>سلام {name}!</h1>"\nif __name__ == "__main__":\n    app.run(debug=True)`, o:"* Running on http://127.0.0.1:5000/"},
+    {t:"FastAPI ⚡", m:"API مدرن - با OpenAPI و Swagger", c:`from fastapi import FastAPI\napp = FastAPI()\n@app.get("/")\ndef home():\n    return {"message": "Hello World"}\n@app.get("/items/{item_id}")\ndef get_item(item_id: int, q: str = None):\n    return {"item_id": item_id, "q": q}\n# uvicorn main:app --reload`, o:"(API با FastAPI - مستندات خودکار در /docs)"},
+    {t:"Requests 🌍", m:"درخواست‌های HTTP - ساده و محبوب", c:`import requests\n# درخواست GET\nr = requests.get("https://api.github.com/users/octocat")\nif r.status_code == 200:\n    data = r.json()\n    print("کاربر:", data["login"])\n    print("نام:", data["name"])\n    print("دنبال‌کنندگان:", data["followers"])\n# درخواست POST\nr2 = requests.post("https://httpbin.org/post", json={"key": "value"})\nprint("POST status:", r2.status_code)`, o:"کاربر: octocat\nنام: The Octocat\nدنبال‌کنندگان: 8000\nPOST status: 200"},
+    {t:"BeautifulSoup 🕷️", m:"وب‌اسکرپینگ - استخراج داده از HTML", c:`from bs4 import BeautifulSoup\nhtml = '''\n<html><body>\n<h1>عنوان اصلی</h1>\n<div class="content">\n<p>پاراگراف اول</p>\n<p>پاراگراف دوم</p>\n</div>\n<a href="https://example.com">لینک</a>\n</body></html>\n'''\nsoup = BeautifulSoup(html, "html.parser")\nprint("عنوان:", soup.h1.text)\nfor p in soup.find_all("p"):\n    print("-", p.text)\nprint("لینک:", soup.a.get("href"))`, o:"عنوان: عنوان اصلی\n- پاراگراف اول\n- پاراگراف دوم\nلینک: https://example.com"},
+    {t:"Scrapy 🕸️", m:"فریمورک کامل وب‌اسکرپینگ", c:`# نصب: pip install scrapy\n# شروع پروژه: scrapy startproject myproject\n# ساخت اسپایدر: scrapy genspider myspider example.com\n# اسپایدر نمونه\nimport scrapy\nclass MySpider(scrapy.Spider):\n    name = "myspider"\n    start_urls = ["https://example.com"]\n    def parse(self, response):\n        for title in response.css("h1::text").getall():\n            yield {"title": title}\n# اجرا: scrapy crawl myspider -o output.json`, o:"(پروژه اسکرپی با اسپایدر نمونه)"},
+    {t:"Selenium 🤖", m:"اتوماسیون مرورگر - تست و اسکرپینگ", c:`from selenium import webdriver\nfrom selenium.webdriver.common.by import By\n# راه‌اندازی درایور\n# driver = webdriver.Chrome()\n# driver.get("https://example.com")\n# title = driver.find_element(By.TAG_NAME, "h1").text\n# print("عنوان:", title)\n# driver.quit()\nprint("کد نمونه Selenium - نیاز به WebDriver")`, o:"کد نمونه Selenium - نیاز به WebDriver"},
+    {t:"aiohttp 🔄", m:"HTTP ناهمگام با asyncio", c:`import asyncio\nimport aiohttp\nasync def fetch(url):\n    async with aiohttp.ClientSession() as session:\n        async with session.get(url) as response:\n            return await response.text()\nasync def main():\n    html = await fetch("https://httpbin.org/html")\n    print("طول HTML:", len(html))\nasyncio.run(main())`, o:"طول HTML: 1274"},
+    {t:"httpx 🚀", m:"HTTP نسل جدید - همزمان و ناهمگام", c:`import httpx\n# همزمان\nr = httpx.get("https://httpbin.org/get")\nprint("status:", r.status_code)\n# ناهمگام\nimport asyncio\nasync def main():\n    async with httpx.AsyncClient() as client:\n        r = await client.get("https://httpbin.org/get")\n        print("async status:", r.status_code)\nasyncio.run(main())`, o:"status: 200\nasync status: 200"},
+    {t:"JWT 🔐", m:"JSON Web Tokens - احراز هویت", c:`import jwt\nimport datetime\n# تولید توکن\npayload = {\n    "user_id": 1,\n    "username": "علی",\n    "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)\n}\nsecret = "my-secret-key"\ntoken = jwt.encode(payload, secret, algorithm="HS256")\nprint("توکن:", token[:50] + "...")\n# بررسی توکن\ndecoded = jwt.decode(token, secret, algorithms=["HS256"])\nprint("user_id:", decoded["user_id"])`, o:"توکن: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\nuser_id: 1"}
+];
+
+// ===== فصل ۶: پایگاه داده (درس ۵۱-۶۰) =====
+const ch6 = [
+    {t:"SQLite 🗄️", m:"پایگاه داده سبک و بدون سرور", c:`import sqlite3\nconn = sqlite3.connect("mydb.db")\ncursor = conn.cursor()\ncursor.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, age INTEGER)")\ncursor.execute("INSERT INTO users (name, age) VALUES (?, ?)", ("علی", 25))\ncursor.execute("INSERT INTO users (name, age) VALUES (?, ?)", ("سارا", 30))\nconn.commit()\ncursor.execute("SELECT * FROM users")\nfor row in cursor.fetchall():\n    print(f"ID: {row[0]}, نام: {row[1]}, سن: {row[2]}")\nconn.close()`, o:"ID: 1, نام: علی, سن: 25\nID: 2, نام: سارا, سن: 30"},
+    {t:"SQLAlchemy 🔗", m:"ORM قدرتمند برای پایگاه داده", c:`from sqlalchemy import create_engine, Column, Integer, String\nfrom sqlalchemy.ext.declarative import declarative_base\nfrom sqlalchemy.orm import sessionmaker\nengine = create_engine("sqlite:///alchemy.db", echo=True)\nBase = declarative_base()\nclass User(Base):\n    __tablename__ = "users"\n    id = Column(Integer, primary_key=True)\n    name = Column(String)\n    age = Column(Integer)\nBase.metadata.create_all(engine)\nSession = sessionmaker(bind=engine)\nsession = Session()\nuser = User(name="علی", age=25)\nsession.add(user)\nsession.commit()\nprint("کاربر اضافه شد")`, o:"کاربر اضافه شد"},
+    {t:"Redis ⚡", m:"پایگاه داده کلید-مقدار در حافظه", c:`import redis\nr = redis.Redis(host="localhost", port=6379, db=0)\nr.set("name", "علی")\nr.set("age", 25)\nprint("name:", r.get("name").decode())\nprint("age:", int(r.get("age")))\nr.hset("user:1", mapping={"name": "سارا", "age": 30})\nprint("user:1 name:", r.hget("user:1", "name").decode())`, o:"name: علی\nage: 25\nuser:1 name: سارا"},
+    {t:"MongoDB 🍃", m:"پایگاه داده NoSQL - مستندمحور", c:`from pymongo import MongoClient\nclient = MongoClient("mongodb://localhost:27017/")\ndb = client["mydatabase"]\ncollection = db["users"]\nuser = {"name": "علی", "age": 25, "city": "تهران"}\nresult = collection.insert_one(user)\nprint("ID:", result.inserted_id)\nfor doc in collection.find({"age": {"$gt": 20}}):\n    print(f"{doc['name']} - {doc['age']}")`, o:"ID: 507f191e810c19729de860ea\nعلی - 25"},
+    {t:"PostgreSQL 🐘", m:"پایگاه داده SQL پیشرفته", c:`import psycopg2\nconn = psycopg2.connect(\n    host="localhost",\n    database="testdb",\n    user="postgres",\n    password="password"\n)\ncursor = conn.cursor()\ncursor.execute("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT, age INT)")\ncursor.execute("INSERT INTO users (name, age) VALUES (%s, %s)", ("علی", 25))\nconn.commit()\ncursor.execute("SELECT * FROM users")\nfor row in cursor.fetchall():\n    print(f"ID: {row[0]}, نام: {row[1]}, سن: {row[2]}")\ncursor.close()\nconn.close()`, o:"ID: 1, نام: علی, سن: 25"},
+    {t:"MySQL 🐬", m:"پایگاه داده SQL محبوب", c:`import mysql.connector\nconn = mysql.connector.connect(\n    host="localhost",\n    user="root",\n    password="password",\n    database="testdb"\n)\ncursor = conn.cursor()\ncursor.execute("CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100), age INT)")\ncursor.execute("INSERT INTO users (name, age) VALUES (%s, %s)", ("علی", 25))\nconn.commit()\ncursor.execute("SELECT * FROM users")\nfor row in cursor.fetchall():\n    print(f"ID: {row[0]}, نام: {row[1]}, سن: {row[2]}")\ncursor.close()\nconn.close()`, o:"ID: 1, نام: علی, سن: 25"},
+    {t:"Elasticsearch 🔍", m:"جستجوی پیشرفته و تحلیل داده", c:`from elasticsearch import Elasticsearch\nes = Elasticsearch("http://localhost:9200")\ndoc = {"name": "علی", "age": 25, "city": "تهران"}\nres = es.index(index="users", document=doc)\nprint("ID:", res["_id"])\nres = es.search(index="users", query={"match": {"name": "علی"}})\nfor hit in res["hits"]["hits"]:\n    print(hit["_source"])`, o:"ID: 1\n{'name': 'علی', 'age': 25, 'city': 'تهران'}"},
+    {t:"Kafka 📨", m:"پیام‌رسانی توزیع‌شده", c:`from kafka import KafkaProducer, KafkaConsumer\nproducer = KafkaProducer(bootstrap_servers="localhost:9092")\nproducer.send("test-topic", b"Hello World")\nproducer.flush()\nconsumer = KafkaConsumer("test-topic", bootstrap_servers="localhost:9092", auto_offset_reset="earliest")\nfor msg in consumer:\n    print("پیام:", msg.value.decode())\n    break`, o:"پیام: Hello World"},
+    {t:"RabbitMQ 🐇", m:"Message Broker با AMQP", c:`import pika\nconnection = pika.BlockingConnection(pika.ConnectionParameters("localhost"))\nchannel = connection.channel()\nchannel.queue_declare(queue="hello")\nchannel.basic_publish(exchange="", routing_key="hello", body="Hello World!")\nprint("پیام ارسال شد")\ndef callback(ch, method, properties, body):\n    print("دریافت:", body.decode())\n    ch.stop_consuming()\nchannel.basic_consume(queue="hello", on_message_callback=callback, auto_ack=True)\nchannel.start_consuming()`, o:"پیام ارسال شد\nدریافت: Hello World!"},
+    {t:"Celery 📋", m:"صف وظایف ناهمگام", c:`from celery import Celery\napp = Celery("tasks", broker="redis://localhost:6379/0")\n@app.task\ndef add(x, y):\n    return x + y\n@app.task\ndef multiply(x, y):\n    return x * y\n# اجرا: celery -A tasks worker --loglevel=info\n# فراخوانی: result = add.delay(4, 6)\n# print(result.get(timeout=10))\nprint("وظایف تعریف شدند")`, o:"وظایف تعریف شدند"}
+];
+
+// ===== فصل ۷: GUI و دسکتاپ (درس ۶۱-۷۰) =====
+const ch7 = [
+    {t:"Tkinter 🖥️", m:"GUI استاندارد پایتون", c:`import tkinter as tk\nroot = tk.Tk()\nroot.title("سلام دنیا")\nroot.geometry("300x200")\nlabel = tk.Label(root, text="سلام!", font=("Arial", 20))\nlabel.pack(pady=50)\nbtn = tk.Button(root, text="بستن", command=root.quit)\nbtn.pack()\nroot.mainloop()`, o:"(پنجره Tkinter نمایش داده می‌شود)"},
+    {t:"PyQt 🎯", m:"GUI حرفه‌ای با Qt", c:`from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton\nimport sys\napp = QApplication(sys.argv)\nwin = QWidget()\nwin.setWindowTitle("PyQt")\nwin.setGeometry(100, 100, 300, 200)\nlayout = QVBoxLayout()\nlabel = QLabel("سلام به PyQt!")\nbtn = QPushButton("بستن")\nbtn.clicked.connect(win.close)\nlayout.addWidget(label)\nlayout.addWidget(btn)\nwin.setLayout(layout)\nwin.show()\nsys.exit(app.exec_())`, o:"(پنجره PyQt نمایش داده می‌شود)"},
+    {t:"PySide 🔷", m:"GUI حرفه‌ای با Qt (رسمی)", c:`from PySide6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton\nimport sys\napp = QApplication(sys.argv)\nwin = QWidget()\nwin.setWindowTitle("PySide")\nwin.setGeometry(100, 100, 300, 200)\nlayout = QVBoxLayout()\nlabel = QLabel("سلام به PySide!")\nbtn = QPushButton("بستن")\nbtn.clicked.connect(win.close)\nlayout.addWidget(label)\nlayout.addWidget(btn)\nwin.setLayout(layout)\nwin.show()\nsys.exit(app.exec_())`, o:"(پنجره PySide نمایش داده می‌شود)"},
+    {t:"wxPython 🐍", m:"GUI با wxWidgets", c:`import wx\napp = wx.App()\nframe = wx.Frame(None, title="wxPython", size=(300,200))\npanel = wx.Panel(frame)\nlabel = wx.StaticText(panel, label="سلام به wxPython!", pos=(50,50))\nbtn = wx.Button(panel, label="بستن", pos=(100,100))\nbtn.Bind(wx.EVT_BUTTON, lambda e: frame.Close())\nframe.Show()\napp.MainLoop()`, o:"(پنجره wxPython نمایش داده می‌شود)"},
+    {t:"Kivy 📱", m:"برنامه‌های موبایل و دسکتاپ", c:`from kivy.app import App\nfrom kivy.uix.button import Button\nclass MyApp(App):\n    def build(self):\n        return Button(text="سلام به Kivy!")\nif __name__ == "__main__":\n    MyApp().run()`, o:"(پنجره Kivy نمایش داده می‌شود)"},
+    {t:"BeeWare 🐝", m:"برنامه‌های کراس‌پلتفرم", c:`from toga import App, Box, Button, Label\nclass MyApp(App):\n    def startup(self):\n        box = Box()\n        label = Label("سلام به BeeWare!")\n        btn = Button("خروج", on_press=self.exit)\n        box.add(label)\n        box.add(btn)\n        self.main_window = Box()\n        self.main_window.add(box)\n        self.main_window.show()\nif __name__ == "__main__":\n    MyApp("MyApp", "org.example").main_loop()`, o:"(پنجره BeeWare نمایش داده می‌شود)"},
+    {t:"Flet 🚀", m:"برنامه‌های کراس‌پلتفرم با Flutter", c:`import flet as ft\ndef main(page: ft.Page):\n    page.title = "Flet App"\n    page.add(ft.Text("سلام به Flet!", size=30))\n    page.add(ft.ElevatedButton("بستن", on_click=lambda e: page.window.close()))\nft.app(target=main)`, o:"(پنجره Flet نمایش داده می‌شود)"},
+    {t:"CustomTkinter 🎨", m:"Tkinter با ظاهر مدرن", c:`import customtkinter as ctk\nctk.set_appearance_mode("dark")\nctk.set_default_color_theme("blue")\nroot = ctk.CTk()\nroot.title("CustomTkinter")\nroot.geometry("300x150")\nlabel = ctk.CTkLabel(root, text="سلام به CustomTkinter!", font=("Arial", 18))\nlabel.pack(pady=30)\nbtn = ctk.CTkButton(root, text="بستن", command=root.quit)\nbtn.pack()\nroot.mainloop()`, o:"(پنجره CustomTkinter نمایش داده می‌شود)"},
+    {t:"Pygame 🎮", m:"توسعه بازی - چندرسانه‌ای", c:`import pygame\npygame.init()\nscreen = pygame.display.set_mode((400, 300))\npygame.display.set_caption("Pygame")\nfont = pygame.font.Font(None, 36)\ntext = font.render("سلام به Pygame!", True, (255, 255, 255))\nrunning = True\nwhile running:\n    for event in pygame.event.get():\n        if event.type == pygame.QUIT:\n            running = False\n    screen.fill((0, 0, 0))\n    screen.blit(text, (50, 130))\n    pygame.display.flip()\npygame.quit()`, o:"(پنجره Pygame نمایش داده می‌شود)"},
+    {t:"Arcade 🕹️", m:"توسعه بازی - مدرن و ساده", c:`import arcade\narcade.open_window(400, 300, "Arcade")\narcade.set_background_color(arcade.color.BLUE)\narcade.start_render()\narcade.draw_text("سلام به Arcade!", 50, 130, arcade.color.WHITE, 24)\narcade.finish_render()\narcade.run()`, o:"(پنجره Arcade نمایش داده می‌شود)"}
+];
+
+// ===== فصل ۸: امنیت و شبکه (درس ۷۱-۸۰) =====
+const ch8 = [
+    {t:"cryptography 🔒", m:"رمزنگاری پیشرفته", c:`from cryptography.fernet import Fernet\nkey = Fernet.generate_key()\ncipher = Fernet(key)\ntext = b"پیام محرمانه"\nencrypted = cipher.encrypt(text)\nprint("رمز:", encrypted[:20], "...")\ndecrypted = cipher.decrypt(encrypted)\nprint("متن اصلی:", decrypted.decode())`, o:"رمز: b'gAAAAABm7fG...'\nمتن اصلی: پیام محرمانه"},
+    {t:"bcrypt 🔑", m:"هش رمز عبور", c:`import bcrypt\npassword = b"my_secure_password"\nsalt = bcrypt.gensalt()\nhash_pass = bcrypt.hashpw(password, salt)\nprint("هش:", hash_pass[:30], "...")\ncheck = bcrypt.checkpw(password, hash_pass)\nprint("تطابق:", check)`, o:"هش: b'$2b$12$KxYk3z...'\nتطابق: True"},
+    {t:"JWT 🎫", m:"JSON Web Tokens - احراز هویت", c:`import jwt\nimport datetime\nsecret = "my-secret"\npayload = {"user": "علی", "exp": datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(hours=1)}\ntoken = jwt.encode(payload, secret, algorithm="HS256")\nprint("توکن:", token[:40], "...")\ndecoded = jwt.decode(token, secret, algorithms=["HS256"])\nprint("کاربر:", decoded["user"])`, o:"توکن: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\nکاربر: علی"},
+    {t:"OAuth 🔐", m:"احراز هویت با OAuth", c:`from oauthlib.oauth2 import BackendApplicationClient\nfrom requests_oauthlib import OAuth2Session\n# کد نمونه برای OAuth\nclient_id = "your_client_id"\nclient_secret = "your_client_secret"\nclient = BackendApplicationClient(client_id=client_id)\noauth = OAuth2Session(client=client)\ntoken = oauth.fetch_token(token_url="https://api.example.com/token", client_id=client_id, client_secret=client_secret)\nprint("توکن دریافت شد")`, o:"توکن دریافت شد"},
+    {t:"SSL/TLS 🔏", m:"امنیت ارتباطات", c:`import ssl\nimport socket\ncontext = ssl.create_default_context()\nconn = context.wrap_socket(socket.socket(socket.AF_INET), server_hostname="example.com")\nconn.connect(("example.com", 443))\nconn.send(b"GET / HTTP/1.1\\r\\nHost: example.com\\r\\n\\r\\n")\nresponse = conn.recv(1024)\nprint("پاسخ:", response[:50], "...")`, o:"پاسخ: b'HTTP/1.1 200 OK\\r\\n...'"},
+    {t:"Socket 📡", m:"ارتباطات شبکه - سوکت", c:`import socket\ns = socket.socket(socket.AF_INET, socket.SOCK_STREAM)\ns.connect(("example.com", 80))\ns.send(b"GET / HTTP/1.1\\r\\nHost: example.com\\r\\n\\r\\n")\nresponse = s.recv(1024)\nprint("پاسخ:", response[:50], "...")\ns.close()`, o:"پاسخ: b'HTTP/1.1 200 OK\\r\\n...'"},
+    {t:"WebSocket 🌐", m:"ارتباط بلادرنگ", c:`import asyncio\nimport websockets\nasync def hello():\n    uri = "wss://echo.websocket.org"\n    async with websockets.connect(uri) as websocket:\n        await websocket.send("Hello World!")\n        response = await websocket.recv()\n        print("پاسخ:", response)\nasyncio.run(hello())`, o:"پاسخ: Hello World!"},
+    {t:"SSH 🖥️", m:"ارتباط امن با سرور", c:`import paramiko\nclient = paramiko.SSHClient()\nclient.set_missing_host_key_policy(paramiko.AutoAddPolicy())\nclient.connect("example.com", username="user", password="pass")\nstdin, stdout, stderr = client.exec_command("ls -la")\nprint("خروجی:", stdout.read().decode()[:50], "...")\nclient.close()`, o:"خروجی: total 48\ndrwxr-xr-x... ..."},
+    {t:"VPN 🛡️", m:"شبکه خصوصی مجازی", c:`# VPN با پایتون - استفاده از کتابخانه‌های openvpn-api\n# یا استفاده از subprocess برای اجرای دستورات VPN\nimport subprocess\n# subprocess.run(["openvpn", "--config", "config.ovpn"])\nprint("اتصال VPN (نمونه)")`, o:"اتصال VPN (نمونه)"},
+    {t:"Firewall 🧱", m:"امنیت شبکه - فایروال", c:`# مدیریت فایروال با پایتون - استفاده از iptables (لینوکس)\nimport subprocess\n# subprocess.run(["iptables", "-L"])\nprint("مدیریت فایروال (نمونه)")`, o:"مدیریت فایروال (نمونه)"}
+];
+
+// ===== فصل ۹: ابزار و یوتیلیتی (درس ۸۱-۹۰) =====
+const ch9 = [
+    {t:"tqdm 📊", m:"نوار پیشرفت - نمایش وضعیت", c:`from tqdm import tqdm\nimport time\nfor i in tqdm(range(100), desc="پردازش"):\n    time.sleep(0.01)\nprint("انجام شد!")`, o:"پردازش: 100%|██████████| 100/100 [00:01<00:00, 98.7it/s]\nانجام شد!"},
+    {t:"click 🖱️", m:"ساخت ابزار خط فرمان", c:`import click\n@click.command()\n@click.option("--name", default="دنیا", help="نام کاربر")\n@click.option("--count", default=1, help="تعداد تکرار")\ndef hello(name, count):\n    for _ in range(count):\n        click.echo(f"سلام {name}!")\nif __name__ == "__main__":\n    hello()\n# اجرا: python script.py --name علی --count 3`, o:"سلام علی!\nسلام علی!\nسلام علی!"},
+    {t:"rich 🎨", m:"ترمینال زیبا و خواناتر", c:`from rich import print\nfrom rich.console import Console\nfrom rich.table import Table\nconsole = Console()\nprint("[bold red]سلام[/bold red] [italic green]به[/italic green] [underline blue]Rich![/underline blue]")`, o:"سلام به Rich! (با رنگ و استایل)"},
+    {t:"colorama 🌈", m:"رنگ در ترمینال", c:`from colorama import Fore, Back, Style, init\ninit()\nprint(Fore.RED + "متن قرمز")\nprint(Back.GREEN + "پس‌زمینه سبز")\nprint(Style.BRIGHT + "پررنگ" + Style.RESET_ALL + " معمولی")`, o:"متن قرمز\nپس‌زمینه سبز\nپررنگ معمولی"},
+    {t:"emoji 😊", m:"ایموجی در پایتون", c:`import emoji\nprint(emoji.emojize("سلام :wave:"))\nprint(emoji.emojize("پایتون :snake: :rocket:"))\nprint(emoji.emojize(":heart: :fire: :star:"))`, o:"سلام 👋\nپایتون 🐍 🚀\n❤️ 🔥 ⭐"},
+    {t:"python-dotenv 🔧", m:"متغیرهای محیطی از فایل .env", c:`# فایل .env:\n# SECRET_KEY=my-secret-key\n# DATABASE_URL=sqlite:///db.sqlite\nfrom dotenv import load_dotenv\nimport os\nload_dotenv()\nsecret = os.getenv("SECRET_KEY", "default")\ndb_url = os.getenv("DATABASE_URL", "sqlite:///default.db")\nprint("SECRET_KEY:", secret)\nprint("DATABASE_URL:", db_url)`, o:"SECRET_KEY: my-secret-key\nDATABASE_URL: sqlite:///db.sqlite"},
+    {t:"watchdog 👁️", m:"نظارت بر تغییرات فایل‌ها", c:`from watchdog.observers import Observer\nfrom watchdog.events import FileSystemEventHandler\nimport time\nclass MyHandler(FileSystemEventHandler):\n    def on_modified(self, event):\n        if not event.is_directory:\n            print(f"فایل تغییر کرد: {event.src_path}")\nhandler = MyHandler()\nowatch = Observer()\nowatch.schedule(handler, path=".", recursive=False)\nowatch.start()\ntry:\n    time.sleep(10)\nexcept KeyboardInterrupt:\n    owatch.stop()\nowatch.join()`, o:"(نظارت بر فایل‌ها - با تغییر فایل پیام نمایش داده می‌شود)"},
+    {t:"schedule ⏰", m:"برنامه‌ریزی وظایف", c:`import schedule\nimport time\ndef job():\n    print("وظیفه اجرا شد!")\nschedule.every(5).seconds.do(job)\nschedule.every().day.at("12:00").do(job)\nfor i in range(10):\n    schedule.run_pending()\n    time.sleep(1)`, o:"وظیفه اجرا شد!\nوظیفه اجرا شد!"},
+    {t:"faker 🎭", m:"تولید داده ساختگی", c:`from faker import Faker\nfake = Faker("fa_IR")\nprint("نام:", fake.name())\nprint("آدرس:", fake.address())\nprint("ایمیل:", fake.email())\nprint("تلفن:", fake.phone_number())\nprint("شغل:", fake.job())`, o:"نام: علی رضایی\nآدرس: تهران، خیابان ...\nایمیل: ali@example.com\nتلفن: 0912-123-4567\nشغل: مهندس نرم‌افزار"},
+    {t:"humanize 🧠", m:"خوانا کردن اعداد و تاریخ", c:`import humanize\nimport datetime\nprint("عدد:", humanize.intcomma(1000000))\nprint("زمان:", humanize.naturaltime(datetime.timedelta(hours=2)))\nprint("تاریخ:", humanize.naturalday(datetime.date.today() - datetime.timedelta(days=3)))`, o:"عدد: 1,000,000\nزمان: 2 ساعت پیش\nتاریخ: 3 روز پیش"}
+];
+
+// ===== فصل ۱۰: مفاهیم پیشرفته (درس ۹۱-۱۰۰) =====
+const ch10 = [
+    {t:"Async/Await 🌀", m:"برنامه‌نویسی ناهمگام با asyncio", c:`import asyncio\nasync def fetch_data(name, delay):\n    print(f"شروع {name}...")\n    await asyncio.sleep(delay)\n    print(f"پایان {name}")\n    return f"داده {name}"\nasync def main():\n    tasks = [fetch_data("A", 2), fetch_data("B", 1), fetch_data("C", 3)]\n    results = await asyncio.gather(*tasks)\n    print("نتایج:", results)\nasyncio.run(main())`, o:"شروع A...\nشروع B...\nشروع C...\nپایان B\nپایان A\nپایان C\nنتایج: ['داده A', 'داده B', 'داده C']"},
+    {t:"Type Hints پیشرفته 📝", m:"Custom Type Hints و Generics", c:`from typing import TypeVar, Generic, List, Optional\nT = TypeVar('T')\nclass Stack(Generic[T]):\n    def __init__(self): self.items: List[T] = []\n    def push(self, item: T) -> None: self.items.append(item)\n    def pop(self) -> Optional[T]: return self.items.pop() if self.items else None\ns = Stack[int]()\ns.push(1); s.push(2); s.push(3)\nprint(s.pop())\nprint(s.pop())\nprint(s.pop())`, o:"3\n2\n1"},
+    {t:"Metaclasses 🧬", m:"کلاس‌سازی - کنترل ایجاد کلاس‌ها", c:`class Meta(type):\n    def __new__(cls, name, bases, dct):\n        dct["created_at"] = "2024-01-01"\n        return super().__new__(cls, name, bases, dct)\nclass MyClass(metaclass=Meta):\n    pass\nprint("created_at:", MyClass.created_at)\nprint("type:", type(MyClass))`, o:"created_at: 2024-01-01\ntype: <class '__main__.Meta'>"},
+    {t:"Descriptors 🔗", m:"ویژگی‌های محاسباتی - کنترل دسترسی", c:`class Descriptor:\n    def __init__(self, default=None):\n        self.default = default\n    def __get__(self, obj, objtype):\n        return self.default if obj is None else obj.__dict__.get(self.name, self.default)\n    def __set__(self, obj, value):\n        obj.__dict__[self.name] = value\n    def __set_name__(self, owner, name):\n        self.name = name\nclass Person:\n    name = Descriptor("ناشناس")\n    age = Descriptor(0)\np = Person()\nprint("name:", p.name)\np.name = "علی"\nprint("name:", p.name)`, o:"name: ناشناس\nname: علی"},
+    {t:"Context Managers 📂", m:"مدیریت منابع با with", c:`class DatabaseConnection:\n    def __enter__(self):\n        print("اتصال به پایگاه داده...")\n        self.connected = True\n        return self\n    def __exit__(self, *args):\n        print("قطع اتصال از پایگاه داده")\n        self.connected = False\n    def query(self, sql):\n        if self.connected:\n            return f"نتیجه: {sql}\"\n        return "اتصال برقرار نیست"\nwith DatabaseConnection() as db:\n    print(db.query("SELECT * FROM users"))`, o:"اتصال به پایگاه داده...\nنتیجه: SELECT * FROM users\nقطع اتصال از پایگاه داده"},
+    {t:"Decorators پیشرفته 🎨", m:"دکوریتورهای پارامتری و زنجیره‌ای", c:`def validate_types(**types):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for i, (arg, (name, expected_type)) in enumerate(zip(args, types.items())):\n                if not isinstance(arg, expected_type):\n                    raise TypeError(f"{name} باید {expected_type.__name__} باشد")\n            return func(*args, **kwargs)\n        return wrapper\n    return decorator\n@validate_types(a=int, b=int)\ndef add(a, b):\n    return a + b\nprint(add(5, 3))\n# print(add("5", 3))  # خطا`, o:"8"},
+    {t:"Generators پیشرفته ⚡", m:"ژنراتورهای تو در تو و yield from", c:`def chain(*iterables):\n    for iterable in iterables:\n        yield from iterable\ndef fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\ng = chain([1, 2, 3], fibonacci(5), [6, 7])\nprint(list(g))`, o:"[1, 2, 3, 0, 1, 1, 2, 3, 6, 7]"},
+    {t:"Coroutines 🔄", m:"همروتین‌ها - ارسال داده به ژنراتور", c:`def coroutine():\n    total = 0\n    while True:\n        value = yield total\n        if value is None:\n            break\n        total += value\nc = coroutine()\nnext(c)\nprint(c.send(10))\nprint(c.send(20))\nprint(c.send(30))\nc.close()`, o:"10\n30\n60"},
+    {t:"Cython ⚡", m:"بهینه‌سازی عملکرد با Cython", c:`# فایل .pyx:\n# def fib_cython(int n):\n#     cdef int a = 0, b = 1, i\n#     for i in range(n):\n#         a, b = b, a + b\n#     return a\n# ساخت: python setup.py build_ext --inplace\nprint("کد Cython - نیاز به کامپایل")`, o:"کد Cython - نیاز به کامپایل"},
+    {t:"پروژه نهایی 🎯", m:"پروژه عملی - مدیریت کتابخانه", c:`class Book:\n    def __init__(self, title, author, year):\n        self.title = title\n        self.author = author\n        self.year = year\n        self.read = False\n    def __str__(self):\n        status = "خوانده شده" if self.read else "نخوانده"\n        return f"{self.title} - {self.author} ({self.year}) [{status}]"\nclass Library:\n    def __init__(self):\n        self.books = []\n    def add_book(self, title, author, year):\n        self.books.append(Book(title, author, year))\n        return len(self.books)\n    def list_books(self):\n        return [str(b) for b in self.books]\n    def toggle_read(self, index):\n        if 0 <= index < len(self.books):\n            self.books[index].read = not self.books[index].read\n            return True\n        return False\nlib = Library()\nlib.add_book("پایتون برای همه", "علی رضایی", 2023)\nlib.add_book("یادگیری ماشین", "سارا احمدی", 2022)\nprint("کتاب‌ها:")\nfor b in lib.list_books():\n    print("-", b)\nlib.toggle_read(0)\nprint("\\nپس از تغییر وضعیت:")\nfor b in lib.list_books():\n    print("-", b)`, o:"کتاب‌ها:\n- پایتون برای همه - علی رضایی (2023) [نخوانده]\n- یادگیری ماشین - سارا احمدی (2022) [نخوانده]\n\nپس از تغییر وضعیت:\n- پایتون برای همه - علی رضایی (2023) [خوانده شده]\n- یادگیری ماشین - سارا احمدی (2022) [نخوانده]"}
+];
+
+// ============================================================
+// ساخت آرایه کامل درس‌ها
+// ============================================================
+const allChapters = [
+    {num:1, name:"مبانی پایتون", data:ch1, start:1},
+    {num:2, name:"ساختارهای داده پیشرفته", data:ch2, start:11},
+    {num:3, name:"کتابخانه استاندارد", data:ch3, start:21},
+    {num:4, name:"کتابخانه‌های علمی", data:ch4, start:31},
+    {num:5, name:"توسعه وب", data:ch5, start:41},
+    {num:6, name:"پایگاه داده", data:ch6, start:51},
+    {num:7, name:"GUI و دسکتاپ", data:ch7, start:61},
+    {num:8, name:"امنیت و شبکه", data:ch8, start:71},
+    {num:9, name:"ابزار و یوتیلیتی", data:ch9, start:81},
+    {num:10, name:"مفاهیم پیشرفته", data:ch10, start:91}
+];
+
+const lessons = [];
+allChapters.forEach(ch => {
+    ch.data.forEach((item, idx) => {
+        const id = ch.start + idx;
+        const content = `
+            <p><i class="fas fa-star" style="color:#ffd866;"></i> <strong>${item.t}</strong></p>
+            <p><strong>موضوع:</strong> ${item.m}</p>
+            <p>${item.m.split(' - ')[0]} یکی از مفاهیم کلیدی در پایتون است که در بسیاری از پروژه‌ها کاربرد دارد. با یادگیری این مفهوم، می‌توانید کدهای خود را حرفه‌ای‌تر و کارآمدتر بنویسید.</p>
+            <div class="tip-box"><i class="fas fa-lightbulb"></i><div><strong>نکته مهم:</strong> برای تسلط بر این مبحث، حتماً کدهای مثال را اجرا کنید و با تغییر دادن آنها، رفتار برنامه را بررسی کنید. تمرین و تکرار کلید یادگیری برنامه‌نویسی است.</div></div>
+            <p><strong>کاربردهای عملی:</strong></p>
+            <ul>
+                <li>استفاده در پروژه‌های واقعی و صنعتی</li>
+                <li>بهبود کیفیت و خوانایی کد</li>
+                <li>افزایش سرعت توسعه و کاهش خطاها</li>
+                <li>امکان استفاده مجدد از کد در پروژه‌های مختلف</li>
+            </ul>
+            <p><strong>پیش‌نیازها:</strong> آشنایی با مفاهیم پایه پایتون مانند متغیرها، حلقه‌ها و شرط‌ها مفید است.</p>
+            <p><strong>نمونه کد:</strong></p>
+            <div class="code-block">${item.c}</div>
+            <p><strong>خروجی نمونه:</strong></p>
+            <div class="code-block" style="color:#81c995;">${item.o}</div>
+            <p><strong>نکات تکمیلی:</strong> در پایتون، روش‌های مختلفی برای پیاده‌سازی این مفهوم وجود دارد. در این درس، بهترین و رایج‌ترین روش‌ها را بررسی می‌کنیم. همچنین به نکات بهینه‌سازی و عملکرد نیز توجه خواهیم داشت.</p>
+        `;
+        lessons.push({
+            id: id,
+            chapter: ch.num,
+            title: item.t,
+            meta: item.m,
+            content: content,
+            code: item.c,
+            output: item.o
+        });
+    });
+});
+
+// ============================================================
+// منطق برنامه
+// ============================================================
+let currentLessonId = 1;
+let filteredIds = lessons.map(l => l.id);
+
+function renderLessonList(filter = '') {
+    const list = document.getElementById('lessonList');
+    list.innerHTML = '';
+    const query = filter.toLowerCase().trim();
+    
+    allChapters.forEach(ch => {
+        const chLessons = ch.data.map((_, idx) => ch.start + idx);
+        const hasMatch = chLessons.some(id => {
+            const lesson = lessons.find(l => l.id === id);
+            return lesson && (lesson.title.includes(query) || lesson.meta.includes(query) || lesson.title.toLowerCase().includes(query) || lesson.meta.toLowerCase().includes(query));
+        });
+        if (!hasMatch && query !== '') return;
+        
+        const header = document.createElement('div');
+        header.className = 'lesson-item chapter-header';
+        header.innerHTML = `<i class="fas fa-layer-group"></i> 📘 فصل ${ch.num}: ${ch.name}`;
+        list.appendChild(header);
+        
+        ch.data.forEach((item, idx) => {
+            const id = ch.start + idx;
             const lesson = lessons.find(l => l.id === id);
             if (!lesson) return;
+            const match = lesson.title.includes(query) || lesson.meta.includes(query) || lesson.title.toLowerCase().includes(query) || lesson.meta.toLowerCase().includes(query);
+            if (query !== '' && !match) return;
             
-            currentLessonId = id;
-            
-            lessonTitle.innerHTML = `<i class="fas fa-book"></i> درس ${lesson.id} · ${lesson.title}`;
-            lessonMeta.textContent = lesson.meta;
-            lessonContent.innerHTML = lesson.content;
-            
-            // نمایش کد با حفظ ساختار
-            codeDisplay.textContent = lesson.code;
-
-            // به‌روزرسانی شماره خطوط
-            updateLineNumbers(lesson.code);
-
-            document.querySelectorAll('.lesson-item').forEach(el => {
-                el.classList.remove('active');
-                if (parseInt(el.dataset.id) === id) {
-                    el.classList.add('active');
-                }
+            const btn = document.createElement('button');
+            btn.className = 'lesson-item' + (lesson.id === currentLessonId ? ' active' : '');
+            btn.dataset.id = lesson.id;
+            const icons = ['code','list-ul','cubes','chart-bar','globe','database','desktop','shield','tools','rocket'];
+            btn.innerHTML = `
+                <i class="fas fa-${icons[ch.num-1]}"></i>
+                درس ${lesson.id} · ${lesson.title}
+                <span class="num">${lesson.id}</span>
+            `;
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                loadLesson(lesson.id);
+                if (window.innerWidth <= 768) toggleSidebar();
             });
+            list.appendChild(btn);
+        });
+    });
+    filteredIds = lessons.map(l => l.id);
+}
 
-            // تنظیم خروجی پیش‌فرض
-            outputContentText.innerHTML = `<span class="info-text"><i class="fas fa-hand-pointer"></i> روی دکمه <span class="status-badge info">نمایش خروجی</span> کلیک کن...</span>`;
-            outputDisplay.classList.remove('expanded');
-        }
+function filterLessons() {
+    const search = document.getElementById('lessonSearch');
+    renderLessonList(search ? search.value : '');
+}
 
-        // -------- به‌روزرسانی شماره خطوط --------
-        function updateLineNumbers(code) {
-            const lines = code.split('\n').length;
-            const lineNumbersCol = document.querySelector('.line-numbers-col');
-            let html = '';
-            for (let i = 1; i <= Math.max(lines, 15); i++) {
-                html += `<span>${i}</span>`;
-            }
-            lineNumbersCol.innerHTML = html;
-        }
+function loadLesson(id) {
+    const lesson = lessons.find(l => l.id === id);
+    if (!lesson) return;
+    currentLessonId = id;
+    const chapterName = `فصل ${lesson.chapter}`;
+    document.getElementById('lessonTitle').innerHTML = `<i class="fas fa-book"></i> درس ${lesson.id} · ${lesson.title} <span class="chapter-badge">${chapterName}</span>`;
+    document.getElementById('lessonMeta').textContent = lesson.meta;
+    document.getElementById('lessonContent').innerHTML = lesson.content;
+    document.querySelectorAll('.lesson-item').forEach(el => {
+        el.classList.remove('active');
+        if (parseInt(el.dataset.id) === id) el.classList.add('active');
+    });
+    document.getElementById('prevBtn').disabled = id <= 1;
+    document.getElementById('nextBtn').disabled = id >= 100;
+}
 
-        // -------- کپی کد --------
-        function copyCode() {
-            const code = codeDisplay.textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                outputContentText.innerHTML = `<span class="success-text">✅ کد کپی شد! <i class="fas fa-check-circle"></i></span>`;
-                setTimeout(() => {
-                    const lesson = lessons.find(l => l.id === currentLessonId);
-                    if (lesson) {
-                        outputContentText.innerHTML = `<span class="info-text"><i class="fas fa-hand-pointer"></i> روی دکمه <span class="status-badge info">نمایش خروجی</span> کلیک کن...</span>`;
-                    }
-                }, 2000);
-            }).catch(() => {
-                outputContentText.innerHTML = `<span class="error-text">❌ کپی نشد. <i class="fas fa-exclamation-circle"></i></span>`;
-            });
-        }
+function nextLesson() {
+    if (currentLessonId < 100) loadLesson(currentLessonId + 1);
+}
 
-        // -------- نمایش خروجی از پیش تعیین شده با ارتفاع خودکار --------
-        function runDisplayedCode() {
-            const lesson = lessons.find(l => l.id === currentLessonId);
-            if (lesson) {
-                let outputText = lesson.output || '📝 این درس خروجی مشخصی ندارد.';
-                
-                // فرمت‌دهی خروجی با رنگ‌ها
-                let formattedOutput = outputText.split('\n').map(line => {
-                    if (line.trim().startsWith('✅')) {
-                        return `<span class="success-text">✅ ${line.substring(1).trim()}</span>`;
-                    } else if (line.trim().startsWith('❌')) {
-                        return `<span class="error-text">❌ ${line.substring(1).trim()}</span>`;
-                    } else if (line.trim().startsWith('⚠️')) {
-                        return `<span class="warning-text">⚠️ ${line.substring(1).trim()}</span>`;
-                    } else if (line.trim().startsWith('(') && line.trim().endsWith(')')) {
-                        return `<span style="color:#6a8aa8; font-style:italic;">${line}</span>`;
-                    } else {
-                        return `<span>${line}</span>`;
-                    }
-                }).join('<br>');
-                
-                // محاسبه ارتفاع بر اساس تعداد خطوط خروجی
-                const lineCount = outputText.split('\n').length;
-                let newHeight = Math.min(600, Math.max(200, lineCount * 30 + 80));
-                
-                outputContentText.innerHTML = `
-                    <div style="margin-bottom:0.3rem; font-size:0.7rem; color:#6a8aa8; border-bottom:1px solid #2a2a3a; padding-bottom:0.2rem;">
-                        <i class="fas fa-clock" style="font-size:0.6rem;"></i> ${new Date().toLocaleTimeString('fa-IR')}
-                        <span style="float:left; font-size:0.6rem;">${lineCount} خط</span>
-                    </div>
-                    ${formattedOutput}
-                `;
-                
-                // افزودن کلاس expanded برای افزایش ارتفاع
-                outputDisplay.classList.add('expanded');
-                
-            } else {
-                outputContentText.innerHTML = `<span class="error-text">❌ خطا: درس پیدا نشد.</span>`;
-            }
-        }
+function prevLesson() {
+    if (currentLessonId > 1) loadLesson(currentLessonId - 1);
+}
 
-        // -------- مقداردهی اولیه --------
-        renderLessonList();
-        loadLesson(1);
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('closed');
+    overlay.classList.toggle('open');
+}
 
-        console.log('🎓 ۱۲ درس پایتون با توضیحات 5000 کاراکتر و خروجی از پیش تعیین شده آماده‌ست!');
-    </script>
+// صفحه‌بندی با کلیدهای کیبورد
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' && !e.shiftKey) { e.preventDefault(); nextLesson(); }
+    if (e.key === 'ArrowLeft' && !e.shiftKey) { e.preventDefault(); prevLesson(); }
+    if (e.key === 'Escape' && window.innerWidth <= 768) { 
+        document.getElementById('sidebar').classList.add('closed');
+        document.getElementById('sidebarOverlay').classList.remove('open');
+    }
+});
 
+// بارگذاری اولیه
+renderLessonList();
+loadLesson(1);
+</script>
 </body>
 </html>
